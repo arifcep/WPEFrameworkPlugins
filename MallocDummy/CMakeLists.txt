@@ -3,6 +3,8 @@ set(MODULE_NAME ${NAMESPACE}${PLUGIN_NAME})
 
 message("*** DAD Setting up *** ${PLUGIN_NAME}")
 
+include(module) # Setup default stuff needed for the cmake framework thingy.
+
 set(PLUGIN_OPTIONS)
 
 set(PLUGIN_SOURCES

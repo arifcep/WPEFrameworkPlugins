@@ -28,6 +28,7 @@ option(PLUGIN_WEBSHELL "Include WebShell plugin" OFF)
 option(PLUGIN_TVCONTROL "Include TVControl plugin" OFF)
 option(PLUGIN_WIFICONTROL "Include WifiControl plugin" OFF)
 option(PLUGIN_MALLOCDUMMY "Include MallocDummy plugin" OFF)
+option(PLUGIN_CRASHDUMMY "Include CrashDummy plugin" ON)
 
 # This contains all kinds of plugins (publicely available, so they all need the plugin support library !!
 find_package(Plugins REQUIRED)
@@ -156,4 +157,8 @@ endif()
 
 if(PLUGIN_MALLOCDUMMY)
     add_subdirectory(MallocDummy)
+endif()
+
+if(WPEFRAMEWORK_PLUGIN_CRASHDUMMY)
+    add_subdirectory(CrashDummy)
 endif()
