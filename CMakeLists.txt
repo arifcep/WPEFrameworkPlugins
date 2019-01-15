@@ -29,7 +29,7 @@ option(PLUGIN_TVCONTROL "Include TVControl plugin" OFF)
 option(PLUGIN_WIFICONTROL "Include WifiControl plugin" OFF)
 option(PLUGIN_MALLOCDUMMY "Include MallocDummy plugin" ON)
 option(PLUGIN_CRASHDUMMY "Include CrashDummy plugin" ON)
-option(PLUGIN_TESTDUMMY "Include TestDummy plugin" ON)
+option(PLUGIN_TESTSERVICE "Include TestService plugin" ON)
 
 # This contains all kinds of plugins (publicely available, so they all need the plugin support library !!
 find_package(Plugins REQUIRED)
@@ -164,6 +164,6 @@ if(PLUGIN_MALLOCDUMMY)
     add_subdirectory(MallocDummy)
 endif()
 
-if(PLUGIN_TESTDUMMY)
-    add_subdirectory(TestDummy)
+if(PLUGIN_TESTSERVICE)
+    add_subdirectory(TestService)
 endif()
