@@ -2,56 +2,15 @@
 
 namespace WPEFramework {
 
-// ITest methods
+static MemoryAllocation* _singleton(Core::Service<MemoryAllocation>::Create<MemoryAllocation>());
+
+//
+// TestSuite Methods
+//
 void MemoryAllocation::Setup(const string& body)
 {
-    //Store body locally
+    // Store body locally
     _body = body;
-}
-
-string /*JSON*/ MemoryAllocation::Execute(const string& testCase)
-{
-    string response/*JSON*/ = EMPTY_STRING;
-
-    response = ExecuteTestCase(testCase);
-
-    if (response == EMPTY_STRING)
-    {
-        response = ExecuteTestCaseInfo(testCase);
-    }
-    return response;
-}
-
-string /*JSON*/ MemoryAllocation::ExecuteTestCase(const string& testCase)
-{
-    string response/*JSON*/ = EMPTY_STRING;
-
-    for (auto const& test : _testCases)
-    {
-        if (test._name == testCase)
-        {
-            response = test._exec();
-            break;
-        }
-    }
-    return response;
-}
-
-string /*JSON*/ MemoryAllocation::ExecuteTestCaseInfo(const string& testCase)
-{
-    string response/*JSON*/ = EMPTY_STRING;
-
-    for (auto const& testInfo : _testCasesInfo)
-    {
-        if (testInfo._name == testCase)
-        {
-            Core::TextSegmentIterator index(Core::TextFragment(testCase), false, '/');
-            index.Next();
-            response = testInfo._exec(testInfo._type, index.Current().Text());
-            break;
-        }
-    }
-    return response;
 }
 
 void MemoryAllocation::Cleanup(void)
@@ -59,60 +18,31 @@ void MemoryAllocation::Cleanup(void)
     Free();
 }
 
+//
+// MemoryAllocation Methods
+///
 string /*JSON*/ MemoryAllocation::GetBody()
 {
     return _body;
 }
 
-string /*JSON*/ MemoryAllocation::CreateResponse(const MemoryAllocation::ResponseType type, const string& method)
+string /*JSON*/ MemoryAllocation::CreateResultResponse()
 {
     string response = EMPTY_STRING;
 
-    if (type == MemoryAllocation::ResponseType::TEST_CASE_RESULT)
-    {
-        MemoryOutputMetadata exeResponse;
-        uint32_t allocated, size, resident;
+    MemoryOutputMetadata exeResponse;
+    uint32_t allocated, size, resident;
 
-        _lock.Lock();
-        allocated = _currentMemoryAllocation;
-        size = static_cast<uint32_t>(_process.Allocated() >> 10);
-        resident = static_cast<uint32_t>(_process.Resident() >> 10);
-        _lock.Unlock();
+    _lock.Lock();
+    allocated = _currentMemoryAllocation;
+    size = static_cast<uint32_t>(_process.Allocated() >> 10);
+    resident = static_cast<uint32_t>(_process.Resident() >> 10);
+    _lock.Unlock();
 
-        exeResponse.Allocated = allocated;
-        exeResponse.Resident = resident;
-        exeResponse.Size = size;
-        exeResponse.ToString(response);
-    }
-    else if (type == MemoryAllocation::ResponseType::TEST_CASES_LIST)
-    {
-        TestCore::TestCases testCasesListResponse;
-        for (auto& testCase : _testCases)
-        {
-            Core::JSON::String name;
-            name = testCase._name;
-            testCasesListResponse.TestCaseNames.Add(name);
-        }
-        testCasesListResponse.ToString(response);
-    }
-    else if (type == MemoryAllocation::ResponseType::TEST_CASE_DESCRIPTION)
-    {
-        TestCore::TestCaseDescription testCaseDesResponse;
-        for (auto& testCase : _testCases)
-        {
-            if(testCase._name == _T(method))
-            {
-                string description;
-                description = testCase._description;
-                testCaseDesResponse.Description = description;
-                testCaseDesResponse.ToString(response);
-                break;
-            }
-        }
-    }
-    else if (type == MemoryAllocation::ResponseType::TEST_CASE_PARAMETERS)
-    {
-    }
+    exeResponse.Allocated = allocated;
+    exeResponse.Resident = resident;
+    exeResponse.Size = size;
+    exeResponse.ToString(response);
 
     return response;
 }
@@ -121,7 +51,7 @@ string /*JSON*/ MemoryAllocation::CreateResponse(const MemoryAllocation::Respons
 string /*JSON*/ MemoryAllocation::Malloc(void) // size in Kb
 {
     uint32_t size;
-    //Get body metadata
+    // Get body metadata
     string body = GetBody();
     MallocInputMetadata input;
 
@@ -159,7 +89,13 @@ string /*JSON*/ MemoryAllocation::Malloc(void) // size in Kb
         TRACE(Trace::Fatal, (_T("*** Invalid POST Body, Memory is not allocated !!! ***")))
     }
 
-    return CreateResponse(MemoryAllocation::ResponseType::TEST_CASE_RESULT, "");
+    return CreateResultResponse();
+}
+
+string MemoryAllocation::MallocParameters(void)
+{
+    // ToDo: Do proper implementation
+    return _T("");
 }
 
 string /*JSON*/ MemoryAllocation::Statm(void)
@@ -177,7 +113,13 @@ string /*JSON*/ MemoryAllocation::Statm(void)
     size = static_cast<uint32_t>(_process.Allocated() >> 10);
     resident = static_cast<uint32_t>(_process.Resident() >> 10);
 
-    return CreateResponse(MemoryAllocation::ResponseType::TEST_CASE_RESULT, "");
+    return CreateResultResponse();
+}
+
+string MemoryAllocation::StatmParameters(void)
+{
+    // ToDo: Do proper implementation
+    return _T("");
 }
 
 string /*JSON*/ MemoryAllocation::Free(void)
@@ -197,7 +139,13 @@ string /*JSON*/ MemoryAllocation::Free(void)
     _currentMemoryAllocation = 0;
     _lock.Unlock();
 
-    return CreateResponse(MemoryAllocation::ResponseType::TEST_CASE_RESULT, "");
+    return CreateResultResponse();
+}
+
+string MemoryAllocation::FreeParameters(void)
+{
+    // ToDo: Do proper implementation
+    return _T("");
 }
 
 void MemoryAllocation::DisableOOMKill()
@@ -215,16 +163,4 @@ void MemoryAllocation::LogMemoryUsage(void)
     TRACE(Trace::Information, (_T("*** Resident: %lu Kb ***"), static_cast<uint32_t>(_process.Resident() >> 10)))
 }
 
-// ITest methods
-void MemoryAllocation::Reqister(const string &name, const string &desciption, const std::function<string(void)> &testCaseCallback)
-{
-    TestCase newTestCase(name, desciption, testCaseCallback);
-   _testCases.push_back(newTestCase);
-}
-
-void MemoryAllocation::ReqisterHelpers(const string &name, MemoryAllocation::ResponseType type, const std::function<string(MemoryAllocation::ResponseType, string)> &testCaseInfoCallback)
-{
-    TestCaseInfo newTestCaseInfo(name, type, testCaseInfoCallback);
-    _testCasesInfo.push_back(newTestCaseInfo);
-}
 } // namespace WPEFramework

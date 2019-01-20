@@ -1,6 +1,6 @@
 #include "Module.h"
 
-#include "TestController.h"
+#include "TestSuiteController.h"
 #include <interfaces/ITestController.h>
 
 namespace WPEFramework
@@ -13,9 +13,7 @@ namespace WPEFramework
 
         public:
             TestControllerImplementation()
-                : _testController(TestCore::TestController::Instance())
-                , _previousTestSuiteName(EMPTY_STRING)
-                , _previousTestSuite(nullptr)
+                : _testSuiteController(TestCore::TestSuiteController::Instance())
             {}
 
             virtual ~TestControllerImplementation() {}
@@ -23,7 +21,6 @@ namespace WPEFramework
             // ITestController methods
             string /*JSON*/ Process(const string& path, const uint8_t skipUrl, const string& body /*JSON*/)
             {
-                bool executed = false;
                 // Return empty result in case of issue
                 string /*JSON*/ response = EMPTY_STRING;
 
@@ -31,50 +28,12 @@ namespace WPEFramework
 
                 index.Next();
                 index.Next();
+                // Here process request other than:
+                // /Service/<CALLSIGN>/TestSuites
+                // /Service/<CALLSIGN>/<TEST_SUITE_NAME>/...
 
-                TestCore::TestController::Iterator testAreas(_testController.TestSuites());
-
-                if (index.Current().Text() == _T("TestSuites"))
-                {
-                    response = _testController.GetTestSuites();
-                    executed = true;
-                }
-                else
-                {
-                    string currentTestSuite = index.Current().Text();
-
-                    while (testAreas.Next() == true)
-                    {
-                        if (testAreas.Key() == currentTestSuite)
-                        {
-                            //Found test suite
-                            if ((currentTestSuite != _previousTestSuiteName) && (_previousTestSuiteName != EMPTY_STRING))
-                            {
-                                //Cleanup before run any kind of test from different Test Suite
-                                _previousTestSuite->Cleanup();
-                            }
-
-                            index.Next();
-                            //Get remaining paths, this will be treat as full method name
-                            if (index.Remainder().Length() != 0)
-                            {
-                                //Setup each test before execution, it is up to Test Suite to handle Setup method
-                                testAreas.Current()->Setup(body);
-                                //Execute
-                                response = testAreas.Current()->Execute(index.Remainder().Text());
-                                executed = true;
-                                _previousTestSuiteName = currentTestSuite;
-                                _previousTestSuite = testAreas.Current();
-                            }
-                            break;
-                        }
-                    }
-                }
-
-                if (!executed)
-                {
-                    TRACE(Trace::Fatal, (_T("*** Test case method not found !!! ***")))
-                }
+                // process TesSuites requests
+                response = _testSuiteController.Process(path, path.length() - index.Remainder().Length(), body);
 
                 return response;
             }
@@ -84,9 +43,7 @@ namespace WPEFramework
             END_INTERFACE_MAP
 
         private:
-            TestCore::TestController& _testController;
-            string _previousTestSuiteName;
-            TestCore::ITestSuite* _previousTestSuite;
+            TestCore::TestSuiteController& _testSuiteController;
     };
 
 SERVICE_REGISTRATION(TestControllerImplementation, 1, 0);
