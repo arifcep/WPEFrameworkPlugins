@@ -1,32 +1,32 @@
-#include "MemoryAllocation.h"
+#include "MemoryAllocationTS.h"
 
 namespace WPEFramework {
 
-static MemoryAllocation* _singleton(Core::Service<MemoryAllocation>::Create<MemoryAllocation>());
+static MemoryAllocationTS* _singleton(Core::Service<MemoryAllocationTS>::Create<MemoryAllocationTS>());
 
 //
 // TestSuite Methods
 //
-void MemoryAllocation::Setup(const string& body)
+void MemoryAllocationTS::Setup(const string& body)
 {
     // Store body locally
     _body = body;
 }
 
-void MemoryAllocation::Cleanup(void)
+void MemoryAllocationTS::Cleanup(void)
 {
     Free();
 }
 
 //
-// MemoryAllocation Methods
+// MemoryAllocationTS Methods
 ///
-string /*JSON*/ MemoryAllocation::GetBody()
+string /*JSON*/ MemoryAllocationTS::GetBody()
 {
     return _body;
 }
 
-string /*JSON*/ MemoryAllocation::CreateResultResponse()
+string /*JSON*/ MemoryAllocationTS::CreateResultResponse()
 {
     string response = EMPTY_STRING;
 
@@ -48,7 +48,7 @@ string /*JSON*/ MemoryAllocation::CreateResultResponse()
 }
 
 // Memory Allocation methods
-string /*JSON*/ MemoryAllocation::Malloc(void) // size in Kb
+string /*JSON*/ MemoryAllocationTS::Malloc(void) // size in Kb
 {
     uint32_t size;
     // Get body metadata
@@ -92,13 +92,13 @@ string /*JSON*/ MemoryAllocation::Malloc(void) // size in Kb
     return CreateResultResponse();
 }
 
-string MemoryAllocation::MallocParameters(void)
+string MemoryAllocationTS::MallocParameters(void)
 {
     // ToDo: Do proper implementation
     return _T("");
 }
 
-string /*JSON*/ MemoryAllocation::Statm(void)
+string /*JSON*/ MemoryAllocationTS::Statm(void)
 {
     TRACE(Trace::Information, (_T("*** TestServiceImplementation::Statm ***")))
 
@@ -116,13 +116,13 @@ string /*JSON*/ MemoryAllocation::Statm(void)
     return CreateResultResponse();
 }
 
-string MemoryAllocation::StatmParameters(void)
+string MemoryAllocationTS::StatmParameters(void)
 {
     // ToDo: Do proper implementation
     return _T("");
 }
 
-string /*JSON*/ MemoryAllocation::Free(void)
+string /*JSON*/ MemoryAllocationTS::Free(void)
 {
     TRACE(Trace::Information, (_T("*** TestServiceImplementation::Free ***")))
 
@@ -142,19 +142,19 @@ string /*JSON*/ MemoryAllocation::Free(void)
     return CreateResultResponse();
 }
 
-string MemoryAllocation::FreeParameters(void)
+string MemoryAllocationTS::FreeParameters(void)
 {
     // ToDo: Do proper implementation
     return _T("");
 }
 
-void MemoryAllocation::DisableOOMKill()
+void MemoryAllocationTS::DisableOOMKill()
 {
     int8_t oomNo = -17;
     _process.OOMAdjust(oomNo);
 }
 
-void MemoryAllocation::LogMemoryUsage(void)
+void MemoryAllocationTS::LogMemoryUsage(void)
 {
     TRACE(Trace::Information, (_T("*** Current allocated: %lu Kb ***"), _currentMemoryAllocation))
     TRACE(Trace::Information, (_T("*** Initial Size:     %lu Kb ***"), _startSize))

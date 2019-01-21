@@ -12,7 +12,7 @@ using namespace std::placeholders;
 
 namespace WPEFramework {
 
-class MemoryAllocation : public TestCore::TestSuite {
+class MemoryAllocationTS : public TestCore::TestSuite {
 private:
     class MemoryOutputMetadata : public Core::JSON::Container {
     private:
@@ -57,11 +57,11 @@ private:
     };
 
 private:
-    MemoryAllocation(const MemoryAllocation&) = delete;
-    MemoryAllocation& operator=(const MemoryAllocation&) = delete;
+    MemoryAllocationTS(const MemoryAllocationTS&) = delete;
+    MemoryAllocationTS& operator=(const MemoryAllocationTS&) = delete;
 
 public:
-    MemoryAllocation()
+    MemoryAllocationTS()
         : _currentMemoryAllocation(0)
         , _lock()
         , _process()
@@ -74,31 +74,31 @@ public:
         // START | Register -- Statm
         TestCore::TestSuite::Register(TestCore::TestCase("Statm", /* Method Name */
             "Provides information about system memory", /* Description */
-            std::bind(&MemoryAllocation::Statm, this), /* Executeable */
-            std::bind(&MemoryAllocation::StatmParameters, this) /* Parameters */
+            std::bind(&MemoryAllocationTS::Statm, this), /* Executeable */
+            std::bind(&MemoryAllocationTS::StatmParameters, this) /* Parameters */
             ));
         // END | REGISTER -- Statm
 
         // START | Register -- Malloc
         TestCore::TestSuite::Register(TestCore::TestCase("Malloc", /* Method Name */
             "Allocates desired kB in memory and holds it", /* Description */
-            std::bind(&MemoryAllocation::Malloc, this), /* Executeable */
-            std::bind(&MemoryAllocation::MallocParameters, this) /* Parameters */
+            std::bind(&MemoryAllocationTS::Malloc, this), /* Executeable */
+            std::bind(&MemoryAllocationTS::MallocParameters, this) /* Parameters */
             ));
         // END | REGISTER -- Malloc
 
         // START | Register -- Free
         TestCore::TestSuite::Register(TestCore::TestCase("Free", /* Method Name */
             "Releases previously allocated memory", /* Description */
-            std::bind(&MemoryAllocation::Free, this), /* Executeable */
-            std::bind(&MemoryAllocation::FreeParameters, this) /* Parameters */
+            std::bind(&MemoryAllocationTS::Free, this), /* Executeable */
+            std::bind(&MemoryAllocationTS::FreeParameters, this) /* Parameters */
             ));
         // END | REGISTER -- Free
 
         TestCore::TestSuiteController::Instance().AnnounceTestSuite(*this, "Memory");
     }
 
-    virtual ~MemoryAllocation() { Free(); }
+    virtual ~MemoryAllocationTS() { Free(); }
 
 public:
     // ITestSuite methods
@@ -111,7 +111,6 @@ private:
     string StatmParameters(void);
 
     string /*JSON*/ Malloc(void);
-    // ToDo: implement
     string MallocParameters(void);
 
     string /*JSON*/ Free(void);
@@ -124,7 +123,7 @@ private:
     string /*JSON*/ GetBody(void);
     string /*JSON*/ CreateResultResponse();
 
-    BEGIN_INTERFACE_MAP(MemoryAllocation)
+    BEGIN_INTERFACE_MAP(MemoryAllocationTS)
     INTERFACE_ENTRY(TestCore::TestSuite)
     END_INTERFACE_MAP
 
