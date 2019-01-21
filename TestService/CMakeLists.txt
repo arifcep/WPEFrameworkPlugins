@@ -14,6 +14,7 @@ set(PLUGIN_SOURCES
         TestSuiteController.cpp
         TestControllerImplementation.cpp
         MemoryAllocationTS.cpp
+        CrashTS.cpp
 )
 
 # update cxx_flags
