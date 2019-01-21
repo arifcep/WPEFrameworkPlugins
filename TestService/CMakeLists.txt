@@ -13,10 +13,11 @@ set(PLUGIN_SOURCES
         TestCaseController.cpp
         TestSuiteController.cpp
         TestControllerImplementation.cpp
-        MemoryAllocation.cpp
+        MemoryAllocationTS.cpp
 )
+
 # update cxx_flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 # Library definition section
 set(MODULE_NAME ${NAMESPACE}${PLUGIN_NAME})
