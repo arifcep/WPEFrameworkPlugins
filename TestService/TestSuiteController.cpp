@@ -118,14 +118,5 @@ void TestSuiteController::RevokeTestSuite(const string& testSuiteName)
     _adminLock.Unlock();
 }
 
-void TestSuiteController::RevokeAllTestSuite()
-{
-    _adminLock.Lock();
-
-    _testSuites.clear();
-
-    _adminLock.Unlock();
-}
-
 } // namespace TestCore
 } // namespace WPEFramework

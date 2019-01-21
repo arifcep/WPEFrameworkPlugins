@@ -89,7 +89,12 @@ public:
         ExecPendingCrash();
     }
 
-    virtual ~CrashTS() {}
+    virtual ~CrashTS()
+    {
+        TestCore::TestSuite::Unregister("Crash");
+        TestCore::TestSuite::Unregister("CrashNTimes");
+        TestCore::TestSuiteController::Instance().RevokeTestSuite("Crash");
+    }
 
 public:
     // TestSuite methods
