@@ -1,5 +1,7 @@
 #include "MemoryAllocationTS.h"
 
+#include "TraceCategories.h"
+
 namespace WPEFramework {
 
 static MemoryAllocationTS* _singleton(Core::Service<MemoryAllocationTS>::Create<MemoryAllocationTS>());
@@ -55,10 +57,12 @@ string /*JSON*/ MemoryAllocationTS::Malloc(void) // size in Kb
     string body = GetBody();
     MallocInputMetadata input;
 
+    TRACE(TestCore::TestLifeCycle, (_T("Enter Malloc test case")))
+
     if (input.FromString(body))
     {
         size = input.Size;
-        TRACE(Trace::Information, (_T("*** Allocate %lu Kb ***"), size))
+        TRACE(TestCore::TestOutput, (_T("Allocate %lu kB"), size))
 
         uint32_t noOfBlocks = 0;
         uint32_t blockSize = (32 * (getpagesize() >> 10)); // 128kB block size
@@ -71,7 +75,7 @@ string /*JSON*/ MemoryAllocationTS::Malloc(void) // size in Kb
             _memory.push_back(malloc(static_cast<size_t>(blockSize << 10)));
             if (!_memory.back())
             {
-                TRACE(Trace::Fatal, (_T("*** Failed allocation !!! ***")))
+                TRACE(TestCore::TestOutput, (_T("*** Failed allocation !!! ***")))
                 break;
             }
 
@@ -86,9 +90,10 @@ string /*JSON*/ MemoryAllocationTS::Malloc(void) // size in Kb
     }
     else
     {
-        TRACE(Trace::Fatal, (_T("*** Invalid POST Body, Memory is not allocated !!! ***")))
+        TRACE(TestCore::TestOutput, (_T("*** Invalid body, Memory is not allocated !!! ***")))
     }
 
+    TRACE(TestCore::TestLifeCycle, (_T("Exit Malloc test case")));
     return CreateResultResponse();
 }
 
@@ -100,7 +105,7 @@ string MemoryAllocationTS::MallocParameters(void)
 
 string /*JSON*/ MemoryAllocationTS::Statm(void)
 {
-    TRACE(Trace::Information, (_T("*** TestServiceImplementation::Statm ***")))
+    TRACE(TestCore::TestLifeCycle, (_T("Enter Statm test case")))
 
     uint32_t allocated;
     uint32_t size;
@@ -113,6 +118,10 @@ string /*JSON*/ MemoryAllocationTS::Statm(void)
     size = static_cast<uint32_t>(_process.Allocated() >> 10);
     resident = static_cast<uint32_t>(_process.Resident() >> 10);
 
+    TRACE(TestCore::TestOutput, (_T("Log Memory statistics")))
+    LogMemoryUsage();
+
+    TRACE(TestCore::TestLifeCycle, (_T("Exit Statm test case")))
     return CreateResultResponse();
 }
 
@@ -124,7 +133,7 @@ string MemoryAllocationTS::StatmParameters(void)
 
 string /*JSON*/ MemoryAllocationTS::Free(void)
 {
-    TRACE(Trace::Information, (_T("*** TestServiceImplementation::Free ***")))
+    TRACE(TestCore::TestLifeCycle, (_T("Enter Free test case")))
 
     if (!_memory.empty())
     {
@@ -134,11 +143,13 @@ string /*JSON*/ MemoryAllocationTS::Free(void)
         }
         _memory.clear();
     }
+    TRACE(TestCore::TestOutput, (_T("Free allocated memory")))
 
     _lock.Lock();
     _currentMemoryAllocation = 0;
     _lock.Unlock();
 
+    TRACE(TestCore::TestLifeCycle, (_T("Exit Free test case")))
     return CreateResultResponse();
 }
 
@@ -156,11 +167,11 @@ void MemoryAllocationTS::DisableOOMKill()
 
 void MemoryAllocationTS::LogMemoryUsage(void)
 {
-    TRACE(Trace::Information, (_T("*** Current allocated: %lu Kb ***"), _currentMemoryAllocation))
-    TRACE(Trace::Information, (_T("*** Initial Size:     %lu Kb ***"), _startSize))
-    TRACE(Trace::Information, (_T("*** Initial Resident: %lu Kb ***"), _startResident))
-    TRACE(Trace::Information, (_T("*** Size:     %lu Kb ***"), static_cast<uint32_t>(_process.Allocated() >> 10)))
-    TRACE(Trace::Information, (_T("*** Resident: %lu Kb ***"), static_cast<uint32_t>(_process.Resident() >> 10)))
+    TRACE(TestCore::TestOutput, (_T("*** Current allocated: %lu Kb ***"), _currentMemoryAllocation))
+    TRACE(TestCore::TestOutput, (_T("*** Initial Size:     %lu Kb ***"), _startSize))
+    TRACE(TestCore::TestOutput, (_T("*** Initial Resident: %lu Kb ***"), _startResident))
+    TRACE(TestCore::TestOutput, (_T("*** Size:     %lu Kb ***"), static_cast<uint32_t>(_process.Allocated() >> 10)))
+    TRACE(TestCore::TestOutput, (_T("*** Resident: %lu Kb ***"), static_cast<uint32_t>(_process.Resident() >> 10)))
 }
 
 } // namespace WPEFramework
