@@ -69,7 +69,7 @@ public:
     {
         // START | Register -- Crash
         TestCore::TestSuite::Register(TestCore::TestCase("Crash", /* Method Name */
-            "Provides information about system memory", /* Description */
+            "Crash one time", /* Description */
             std::bind(&CrashTS::Crash, this), /* Executeable */
             std::bind(&CrashTS::CrashParameters, this) /* Parameters */
             ));
