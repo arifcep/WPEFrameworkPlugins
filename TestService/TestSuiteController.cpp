@@ -19,7 +19,7 @@ string /*JSON*/ TestSuiteController::Process(const string& path, const uint8_t s
 
     index.Next();
 
-    if (index.Current().Text() == _T("TestSuites"))
+    if ((index.Current().Text() == _T("TestSuites")) && (!index.Next()))
     {
         response = GetTestSuites();
         executed = true;
@@ -29,7 +29,7 @@ string /*JSON*/ TestSuiteController::Process(const string& path, const uint8_t s
         TestCore::TestSuiteController::Iterator testSuite(TestSuites());
         string currentTestSuiteName = index.Current().Text();
 
-        while (testSuite.Next() == true)
+        while (testSuite.Next())
         {
             if (testSuite.Key() == currentTestSuiteName)
             {
