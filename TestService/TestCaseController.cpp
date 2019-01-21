@@ -10,10 +10,11 @@ string /*JSON*/ TestCaseController::Process(const string& path, const uint8_t sk
     string /*JSON*/ response = EMPTY_STRING;
 
     Core::TextSegmentIterator index(Core::TextFragment(path, skipUrl, path.length() - skipUrl), false, '/');
+
     index.Next();
     string testCaseName = index.Current().Text();
 
-    if (testCaseName == _T("TestCases"))
+    if ((testCaseName == _T("TestCases")) && (!index.Next()))
     {
         // API /TestCases
         response = GetTestCaseList();
@@ -22,11 +23,11 @@ string /*JSON*/ TestCaseController::Process(const string& path, const uint8_t sk
     else
     {
         TestCaseIterator testCase(TestCases());
-        while (testCase.Next() == true)
+        while (testCase.Next())
         {
             if (testCase.Current().Name() == testCaseName)
             {
-                if (index.Next() == false)
+                if (!index.Next())
                 {
                     // API /<TESTCASE_NAME>/
                     response = testCase.Current().Execute();
@@ -47,12 +48,6 @@ string /*JSON*/ TestCaseController::Process(const string& path, const uint8_t sk
                         // API /<TESTCASE_NAME>/Description
                         response = CreateDescriptionResponse(testCase.Current().Description());
                         executed = true;
-                    }
-                    else
-                    {
-                        // ToDo: handle this case properly
-                        TRACE(Trace::Information, (_T("UNSUPPORTED METHOD")));
-                        response = EMPTY_STRING;
                     }
                 }
                 break;
