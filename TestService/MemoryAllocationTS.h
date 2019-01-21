@@ -121,7 +121,8 @@ private:
     void LogMemoryUsage(void);
 
     string /*JSON*/ GetBody(void);
-    string /*JSON*/ CreateResultResponse();
+    string /*JSON*/ CreateResultResponse(void);
+    Core::JSON::ArrayType<TestCore::Parameters::Parameter> CreateOutputParamsResponse(void);
 
     BEGIN_INTERFACE_MAP(MemoryAllocationTS)
     INTERFACE_ENTRY(TestCore::TestSuite)

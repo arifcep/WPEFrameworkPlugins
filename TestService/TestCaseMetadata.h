@@ -49,10 +49,16 @@ private:
 
 public:
     class Parameter : public Core::JSON::Container {
-    private:
-        Parameter& operator=(const Parameter& rhs) = delete;
-
     public:
+        Parameter& operator=(const Parameter& rhs)
+        {
+            this->Name = rhs.Name;
+            this->Type = rhs.Type;
+            this->Comment = rhs.Comment;
+
+            return *this;
+        }
+
         Parameter()
             : Core::JSON::Container()
             , Name()

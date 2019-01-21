@@ -23,7 +23,7 @@ void MemoryAllocationTS::Cleanup(void)
 //
 // MemoryAllocationTS Methods
 ///
-string /*JSON*/ MemoryAllocationTS::GetBody()
+string /*JSON*/ MemoryAllocationTS::GetBody(void)
 {
     return _body;
 }
@@ -47,6 +47,43 @@ string /*JSON*/ MemoryAllocationTS::CreateResultResponse()
     exeResponse.ToString(response);
 
     return response;
+}
+
+Core::JSON::ArrayType<TestCore::Parameters::Parameter> MemoryAllocationTS::CreateOutputParamsResponse(void)
+{
+    TestCore::Parameters outputParameters;
+    TestCore::Parameters::Parameter allocated;
+    TestCore::Parameters::Parameter size;
+    TestCore::Parameters::Parameter resident;
+    string allocatedName = "allocated";
+    string allocatedType = "Int";
+    string allocatedComment = "allocated size in kB";
+
+    string sizeName = "size";
+    string sizeType = "Int";
+    string sizeComment = "proc size memory in kB";
+
+    string residentName = "resident";
+    string residentType = "Int";
+    string residentComment = "proc resident memory in kB";
+
+    allocated.Name = allocatedName;
+    allocated.Type = allocatedType;
+    allocated.Comment = allocatedComment;
+
+    size.Name = sizeName;
+    size.Type = sizeType;
+    size.Comment = sizeComment;
+
+    resident.Name = residentName;
+    resident.Type = residentType;
+    resident.Comment = residentComment;
+
+    outputParameters.Output.Add(allocated);
+    outputParameters.Output.Add(size);
+    outputParameters.Output.Add(resident);
+
+    return outputParameters.Output;
 }
 
 // Memory Allocation methods
@@ -99,8 +136,25 @@ string /*JSON*/ MemoryAllocationTS::Malloc(void) // size in Kb
 
 string MemoryAllocationTS::MallocParameters(void)
 {
-    // ToDo: Do proper implementation
-    return _T("");
+    string response = EMPTY_STRING;
+    TestCore::Parameters mallocParameters;
+
+    mallocParameters.Output = CreateOutputParamsResponse();
+
+    TestCore::Parameters::Parameter size;
+    string sizeName = "size";
+    string sizeType = "Int";
+    string sizeComment = "allocate memory size in kB";
+
+    size.Name = sizeName;
+    size.Type = sizeType;
+    size.Comment = sizeComment;
+
+    mallocParameters.Input.Add(size);
+
+    mallocParameters.ToString(response);
+
+    return response;
 }
 
 string /*JSON*/ MemoryAllocationTS::Statm(void)
@@ -127,8 +181,14 @@ string /*JSON*/ MemoryAllocationTS::Statm(void)
 
 string MemoryAllocationTS::StatmParameters(void)
 {
-    // ToDo: Do proper implementation
-    return _T("");
+    string response = EMPTY_STRING;
+    TestCore::Parameters statmOutputParameters;
+
+    statmOutputParameters.Output = CreateOutputParamsResponse();
+
+    statmOutputParameters.ToString(response);
+
+    return response;
 }
 
 string /*JSON*/ MemoryAllocationTS::Free(void)
@@ -155,11 +215,17 @@ string /*JSON*/ MemoryAllocationTS::Free(void)
 
 string MemoryAllocationTS::FreeParameters(void)
 {
-    // ToDo: Do proper implementation
-    return _T("");
+    string response = EMPTY_STRING;
+    TestCore::Parameters freeOutputParameters;
+
+    freeOutputParameters.Output = CreateOutputParamsResponse();
+
+    freeOutputParameters.ToString(response);
+
+    return response;
 }
 
-void MemoryAllocationTS::DisableOOMKill()
+void MemoryAllocationTS::DisableOOMKill(void)
 {
     int8_t oomNo = -17;
     _process.OOMAdjust(oomNo);
