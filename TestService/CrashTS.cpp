@@ -1,5 +1,6 @@
 #include "CrashTS.h"
 
+#include "TraceCategories.h"
 #include <fstream>
 
 namespace WPEFramework {
@@ -41,10 +42,10 @@ string CrashTS::Crash(void)
         _crashDelay = input.CrashDelay;
     }
 
-    TRACE(Trace::Information, (_T("Preparing for crash in %d seconds"), _crashDelay));
+    TRACE(TestCore::TestOutput, (_T("Preparing for crash in %d seconds"), _crashDelay));
     sleep(_crashDelay);
 
-    TRACE(Trace::Information, (_T("Executing crash!")));
+    TRACE(TestCore::TestOutput, (_T("Executing crash!")));
     uint8_t* tmp = nullptr;
     *tmp = 3; // segmentaion fault
 
@@ -73,7 +74,7 @@ string CrashTS::CrashNTimes(void)
 
     if (pendingCrashCount != 0)
     {
-        TRACE(Trace::Information, (_T("Pending crash already in progress")));
+        TRACE(TestCore::TestOutput, (_T("Pending crash already in progress")));
     }
     else
     {
@@ -114,7 +115,7 @@ uint8_t CrashTS::PendingCrashCount(void)
         }
         else
         {
-            TRACE(Trace::Information, (_T("Failed to read value from pendingCrashFile")));
+            TRACE(TestCore::TestOutput, (_T("Failed to read value from pendingCrashFile")));
         }
     }
 
@@ -139,7 +140,7 @@ bool CrashTS::SetPendingCrashCount(uint8_t newCrashCount)
         }
         else
         {
-            TRACE(Trace::Information, (_T("Failed to write value to pendingCrashFile ")));
+            TRACE(TestCore::TestOutput, (_T("Failed to write value to pendingCrashFile ")));
         }
         pendingCrashFile.close();
     }
@@ -164,7 +165,7 @@ void CrashTS::ExecPendingCrash(void)
     }
     else
     {
-        TRACE(Trace::Information, (_T("No pending crash")));
+        TRACE(TestCore::TestOutput, (_T("No pending crash")));
     }
 }
 
