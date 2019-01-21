@@ -98,7 +98,14 @@ public:
         TestCore::TestSuiteController::Instance().AnnounceTestSuite(*this, "Memory");
     }
 
-    virtual ~MemoryAllocationTS() { Free(); }
+    virtual ~MemoryAllocationTS()
+    {
+        Free();
+        TestCore::TestSuite::Unregister("Statm");
+        TestCore::TestSuite::Unregister("Malloc");
+        TestCore::TestSuite::Unregister("Free");
+        TestCore::TestSuiteController::Instance().RevokeTestSuite("Memory");
+    }
 
 public:
     // ITestSuite methods
