@@ -70,11 +70,9 @@ public:
 public:
     inline TestCaseIterator TestCases() { return (TestCaseIterator(_testCases)); }
 
-    inline void Register(const TestCase& testCase) { _testCases.push_back(testCase); }
-    inline void Unregister(const string& name)
-    {
-        // ToDo: implement
-    }
+    void Register(const TestCase& testCase);
+    void Unregister(const string& name);
+    void UnregisterAll();
 
 public:
     string /*JSON*/ Process(const string& path, const uint8_t skipUrl, const string& body);
