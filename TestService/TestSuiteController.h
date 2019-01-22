@@ -60,7 +60,7 @@ class TestSuiteController {
 
         void AnnounceTestSuite(TestCore::TestSuite& testsArea, const string& testSuiteName);
         void RevokeTestSuite(const string& testSuiteName);
-        void RevokeAllTestSuite();
+        void RevokeAllTestSuites();
 
     private:
         Core::CriticalSection _adminLock;
