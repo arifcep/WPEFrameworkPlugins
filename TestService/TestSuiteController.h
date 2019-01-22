@@ -42,6 +42,7 @@ class TestSuiteController {
 
         virtual ~TestSuiteController()
         {
+            RevokeAllTestSuites();
         }
 
     // TestSuiteController methods
