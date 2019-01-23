@@ -1,7 +1,7 @@
 #include "TestCommandController.h"
 
-namespace WPEFramework
-{
+namespace WPEFramework {
+namespace TestCore {
 
 /* static */ TestCommandController& TestCommandController::Instance()
 {
@@ -52,8 +52,14 @@ Exchange::ITestUtility::ICommand* TestCommandController::Command(const string& n
     return command;
 }
 
-TestCommandController::Iterator TestCommandController::Commands(void)
+Exchange::ITestUtility::ICommand::IIterator* TestCommandController::Commands(void) const
 {
-    return (Iterator(_commands));
+    Exchange::ITestUtility::ICommand::IIterator* iterator = nullptr;
+    _adminLock.Lock();
+    iterator = Core::Service<Iterator>::Create<Exchange::ITestUtility::ICommand::IIterator>(_commands);
+    _adminLock.Unlock();
+    return iterator;
 }
+
+} // namespace TestCore
 } // namespace WPEFramework

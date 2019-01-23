@@ -1,56 +1,36 @@
 #pragma once
 
-#include "Module.h"
-
 namespace WPEFramework {
 namespace TestCore {
 
-class TestCaseDescription : public Core::JSON::Container {
+class TestCommandDescription : public Core::JSON::Container {
 private:
-    TestCaseDescription(const TestCaseDescription&) = delete;
-    TestCaseDescription& operator=(const TestCaseDescription&) = delete;
+    TestCommandDescription(const TestCommandDescription&) = delete;
+    TestCommandDescription& operator=(const TestCommandDescription&) = delete;
 
 public:
-    TestCaseDescription()
+    TestCommandDescription()
         : Core::JSON::Container()
         , Description()
     {
         Add(_T("description"), &Description);
     }
 
-    ~TestCaseDescription() {}
+    ~TestCommandDescription() {}
 
 public:
     Core::JSON::String Description;
 };
 
-class TestCases : public Core::JSON::Container {
+class TestCommandParameters : public Core::JSON::Container {
 private:
-    TestCases(const TestCases&) = delete;
-    TestCases& operator=(const TestCases&) = delete;
+    TestCommandParameters(const TestCommandParameters&) = delete;
+    TestCommandParameters& operator=(const TestCommandParameters&) = delete;
 
 public:
-    TestCases()
-        : Core::JSON::Container()
-        , TestCaseNames()
-    {
-        Add(_T("testCases"), &TestCaseNames);
-    }
-    ~TestCases() {}
-
-public:
-    Core::JSON::ArrayType<Core::JSON::String> TestCaseNames;
-};
-
-class Parameters : public Core::JSON::Container {
-private:
-    Parameters(const Parameters&) = delete;
-    Parameters& operator=(const Parameters&) = delete;
-
-public:
-    class Parameter : public Core::JSON::Container {
+    class TestCommand : public Core::JSON::Container {
     public:
-        Parameter& operator=(const Parameter& rhs)
+        TestCommand& operator=(const TestCommand& rhs)
         {
             this->Name = rhs.Name;
             this->Type = rhs.Type;
@@ -59,7 +39,7 @@ public:
             return *this;
         }
 
-        Parameter()
+        TestCommand()
             : Core::JSON::Container()
             , Name()
             , Type()
@@ -69,7 +49,7 @@ public:
             addFields();
         }
 
-        Parameter(const string& name, const string& type, const string& comment)
+        TestCommand(const string& name, const string& type, const string& comment)
             : Core::JSON::Container()
             , Name(name)
             , Type(type)
@@ -78,7 +58,7 @@ public:
             addFields();
         }
 
-        Parameter(const Parameter& copy)
+        TestCommand(const TestCommand& copy)
             : Core::JSON::Container()
             , Name(copy.Name)
             , Type(copy.Type)
@@ -87,7 +67,7 @@ public:
             addFields();
         }
 
-        ~Parameter() {}
+        ~TestCommand() {}
 
     private:
         void addFields()
@@ -104,7 +84,7 @@ public:
     };
 
 public:
-    Parameters()
+    TestCommandParameters()
         : Core::JSON::Container()
         , Input()
         , Output()
@@ -112,11 +92,11 @@ public:
         Add(_T("input"), &Input);
         Add(_T("output"), &Output);
     }
-    ~Parameters() {}
+    ~TestCommandParameters() {}
 
 public:
-    Core::JSON::ArrayType<Parameter> Input;
-    Core::JSON::ArrayType<Parameter> Output;
+    Core::JSON::ArrayType<TestCommand> Input;
+    Core::JSON::ArrayType<TestCommand> Output;
 };
-} //namespace TestCore
+} // namespace TestCore
 } // namespace WPEFramework
