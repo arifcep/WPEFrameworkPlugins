@@ -1,14 +1,12 @@
 #pragma once
 
 #include "Module.h"
-#include "TestCaseMetadata.h"
 
+#include "TestCaseMetadata.h"
 #include <functional>
 
 namespace WPEFramework {
 namespace TestCore {
-
-enum class ResponseType { TEST_CASE_RESULT = 0, TEST_CASE_DESCRIPTION, TEST_CASE_PARAMETERS };
 
 class TestCase {
 private:
