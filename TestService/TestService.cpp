@@ -73,7 +73,7 @@ SERVICE_REGISTRATION(TestService, 1, 0);
     _skipURL = static_cast<uint8_t>(_service->WebPrefix().length());
     _service->Register(&_notification);
 
-    _testCommandControllerImp = _service->Root<Exchange::ITestController>(_pid, ImplWaitTime, _T("TestControllerImplementation"));
+    _testCommandControllerImp = _service->Root<Exchange::ITestController>(_pid, ImplWaitTime, _T("TestCommandControllerImp"));
 
     if ((_testCommandControllerImp != nullptr) && (_service != nullptr))
     {

@@ -4,13 +4,55 @@
 
 #include <interfaces/ITestUtility.h>
 
-namespace WPEFramework
-{
+namespace WPEFramework {
+namespace TestCore {
 
 class TestCommandController
 {
     private:
         using TestCommandContainer = std::map<string, Exchange::ITestUtility::ICommand*>;
+
+        class Iterator : public Exchange::ITestUtility::ICommand::IIterator
+        {
+            public:
+                using IteratorImpl = Core::IteratorMapType<TestCommandContainer, Exchange::ITestUtility::ICommand*, string>;
+
+                explicit Iterator(const TestCommandContainer& commands)
+                    : Exchange::ITestUtility::ICommand::IIterator()
+                    , _container(commands)
+                    , _iterator(_container) {
+
+                      }
+
+                virtual ~Iterator() = default;
+
+                Iterator(const Iterator&) = delete;
+                Iterator& operator= (const Iterator&) = delete;
+
+                BEGIN_INTERFACE_MAP(Iterator)
+                    INTERFACE_ENTRY(Exchange::ITestUtility::ICommand::IIterator)
+                END_INTERFACE_MAP
+
+                void Reset() override {
+                    _iterator.Reset(0);
+                }
+
+                bool IsValid() const override {
+                    return _iterator.IsValid();
+                }
+
+                bool Next() override {
+                    return _iterator.Next();
+                }
+
+                Exchange::ITestUtility::ICommand* Command() const override {
+                    return *_iterator;
+                }
+
+                private:
+                    TestCommandContainer _container;
+                    IteratorImpl _iterator;
+        };
 
         class Metadata : public Core::JSON::Container {
             private:
@@ -42,16 +84,18 @@ class TestCommandController
         static TestCommandController& Instance();
         ~TestCommandController() = default;
 
-        typedef Core::IteratorMapType<TestCommandContainer, Exchange::ITestUtility::ICommand*, string> Iterator;
+        // ITestUtility methods
+        Exchange::ITestUtility::ICommand* Command(const string& name);
+        Exchange::ITestUtility::ICommand::IIterator* Commands(void) const;
 
+        // TestCommandController methods
         void Announce(Exchange::ITestUtility::ICommand* command);
         void Revoke(Exchange::ITestUtility::ICommand* command);
-        Exchange::ITestUtility::ICommand* Command(const string& name);
-        Iterator Commands(void);//ToDo: Can I leave implementation of iterator like that
         string /*JSON*/ TestCommands(void);
 
     private:
         mutable Core::CriticalSection _adminLock;
         TestCommandContainer _commands;
 };
+} // namespace TestCore
 } // namespace WPEFramework

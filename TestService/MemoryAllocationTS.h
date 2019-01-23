@@ -2,12 +2,13 @@
 
 #include "Module.h"
 
-#include "TestCaseMetadata.h"
 #include "TestSuite.h"
 #include "TestSuiteController.h"
 #include "TestCaseController.h"
 
 #include <functional>
+
+#include "TestCommandMetadata.h"
 using namespace std::placeholders;
 
 namespace WPEFramework {

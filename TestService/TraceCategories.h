@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Module.h"
-
 namespace WPEFramework {
 namespace TestCore {
 

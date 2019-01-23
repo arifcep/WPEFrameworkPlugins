@@ -12,11 +12,9 @@ set(PLUGIN_SOURCES
         TestService.cpp
         TestCommandControllerImp.cpp
         TestCommandController.cpp
-#        TestCaseController.cpp
-#        TestSuiteController.cpp
-#        TestControllerImplementation.cpp
-#        MemoryAllocationTS.cpp
-#        CrashTS.cpp
+        Malloc.cpp
+        Free.cpp
+        Statm.cpp
 )
 
 # update cxx_flags
