@@ -7,66 +7,66 @@
 namespace WPEFramework {
 
 class Statm : public Exchange::ITestUtility::ICommand {
-private:
-    Statm(const Statm&) = delete;
-    Statm& operator=(const Statm&) = delete;
+    private:
+        Statm(const Statm&) = delete;
+        Statm& operator=(const Statm&) = delete;
 
-public:
-    Statm()
-        : _memoryAdmin(MemoryAllocation::Instance())
-    {
-        TestCore::TestCommandController::Instance().Announce(this);
-    }
+    public:
+        Statm()
+            : _memoryAdmin(MemoryAllocation::Instance())
+        {
+            TestCore::TestCommandController::Instance().Announce(this);
+        }
 
-    virtual ~Statm()
-    {
-        TestCore::TestCommandController::Instance().Revoke(this);
-    }
+        virtual ~Statm()
+        {
+            TestCore::TestCommandController::Instance().Revoke(this);
+        }
 
-public:
-    // ICommand methods
-    string Execute(const string& params) override
-    {
-        return _memoryAdmin.CreateResponse();
-    }
+    public:
+        // ICommand methods
+        string Execute(const string& params) override
+        {
+            return _memoryAdmin.CreateResponse();
+        }
 
-    const string& Description() const override
-    {
-        return _description;
-    }
+        const string& Description() const override
+        {
+            return _description;
+        }
 
-    virtual const string& Signature() const override
-    {
-        return _signature;
-    }
+        virtual const string& Signature() const override
+        {
+            return _signature;
+        }
 
-    virtual const string& Name() const final
-    {
-        return _name;
-    }
+        virtual const string& Name() const final
+        {
+            return _name;
+        }
 
-private:
-    BEGIN_INTERFACE_MAP(MemoryAllocationTS)
-        INTERFACE_ENTRY(Exchange::ITestUtility::ICommand)
-    END_INTERFACE_MAP
+    private:
+        BEGIN_INTERFACE_MAP(MemoryAllocationTS)
+            INTERFACE_ENTRY(Exchange::ITestUtility::ICommand)
+        END_INTERFACE_MAP
 
-    // ToDo: Move it to ICommand Base Class
-    string CreateDescription(const string& description)
-    {
-        TestCore::TestCommandDescription jsonDescription;
-        string outString;
+        // ToDo: Move it to ICommand Base Class
+        string CreateDescription(const string& description)
+        {
+            TestCore::TestCommandDescription jsonDescription;
+            string outString;
 
-        jsonDescription.Description = description;
-        jsonDescription.ToString(outString);
+            jsonDescription.Description = description;
+            jsonDescription.ToString(outString);
 
-        return outString;
-    }
+            return outString;
+        }
 
-private:
-    MemoryAllocation& _memoryAdmin;
-    const string _description = CreateDescription(_T("Provides information about system memory"));
-    const string _name = _T("Statm");
-    const string _signature = EMPTY_STRING;//ToDo: Not supported at the moment
+    private:
+        MemoryAllocation& _memoryAdmin;
+        const string _description = CreateDescription(_T("Provides information about system memory"));
+        const string _name = _T("Statm");
+        const string _signature = EMPTY_STRING;//ToDo: Not supported at the moment
 };
 
 static Statm* _singleton(Core::Service<Statm>::Create<Statm>());
