@@ -66,16 +66,16 @@ SERVICE_REGISTRATION(TestService, 1, 0);
 
     ASSERT(service != nullptr);
     ASSERT(_service == nullptr);
-    ASSERT(_testsControllerImp == nullptr);
+    ASSERT(_testCommandControllerImp == nullptr);
     ASSERT(_memory == nullptr);
 
     _service = service;
     _skipURL = static_cast<uint8_t>(_service->WebPrefix().length());
     _service->Register(&_notification);
 
-    _testsControllerImp = _service->Root<Exchange::ITestController>(_pid, ImplWaitTime, _T("TestControllerImplementation"));
+    _testCommandControllerImp = _service->Root<Exchange::ITestController>(_pid, ImplWaitTime, _T("TestControllerImplementation"));
 
-    if ((_testsControllerImp != nullptr) && (_service != nullptr))
+    if ((_testCommandControllerImp != nullptr) && (_service != nullptr))
     {
         _memory = WPEFramework::TestService::MemoryObserver(_pid);
         ASSERT(_memory != nullptr);
@@ -85,7 +85,7 @@ SERVICE_REGISTRATION(TestService, 1, 0);
     {
         ProcessTermination(_pid);
         _service = nullptr;
-        _testsControllerImp = nullptr;
+        _testCommandControllerImp = nullptr;
         _service->Unregister(&_notification);
 
         TRACE(Trace::Fatal, (_T("*** TestService could not be instantiated ***")))
@@ -98,14 +98,14 @@ SERVICE_REGISTRATION(TestService, 1, 0);
 /* virtual */ void TestService::Deinitialize(PluginHost::IShell* service)
 {
     ASSERT(_service == service);
-    ASSERT(_testsControllerImp != nullptr);
+    ASSERT(_testCommandControllerImp != nullptr);
     ASSERT(_memory != nullptr);
     ASSERT(_pid);
 
     TRACE(Trace::Information, (_T("*** OutOfProcess Plugin is properly destructed. PID: %d ***"), _pid))
 
     ProcessTermination(_pid);
-    _testsControllerImp = nullptr;
+    _testCommandControllerImp = nullptr;
     _memory->Release();
     _memory = nullptr;
     _service->Unregister(&_notification);
@@ -133,7 +133,7 @@ static Core::ProxyPoolType<Web::TextBody> _testServiceMetadata(2);
     ASSERT(_skipURL <= request.Path.length());
     Core::ProxyType<Web::Response> result(PluginHost::Factories::Instance().Response());
 
-    if (_testsControllerImp != nullptr)
+    if (_testCommandControllerImp != nullptr)
     {
         Core::ProxyType<Web::TextBody> body(_testServiceMetadata.Element());
         string requestBody = EMPTY_STRING;
@@ -143,7 +143,7 @@ static Core::ProxyPoolType<Web::TextBody> _testServiceMetadata(2);
             requestBody = (*request.Body<Web::TextBody>());
         }
 
-        (*body) = _testsControllerImp->Process(request.Path, _skipURL, requestBody);
+        (*body) = _testCommandControllerImp->Process(request.Path, _skipURL, requestBody);
         if((*body) != EMPTY_STRING)
         {
             result->Body<Web::TextBody>(body);

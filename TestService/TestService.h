@@ -44,7 +44,7 @@ public:
         : _service(nullptr)
         , _notification(this)
         , _memory(nullptr)
-        , _testsControllerImp(nullptr)
+        , _testCommandControllerImp(nullptr)
         , _pluginName("TestService")
         , _skipURL(0)
         , _pid(0)
@@ -57,7 +57,7 @@ public:
     INTERFACE_ENTRY(PluginHost::IPlugin)
     INTERFACE_ENTRY(PluginHost::IWeb)
     INTERFACE_AGGREGATE(Exchange::IMemory, _memory)
-    INTERFACE_AGGREGATE(Exchange::ITestController, _testsControllerImp)
+    INTERFACE_AGGREGATE(Exchange::ITestController, _testCommandControllerImp)
     END_INTERFACE_MAP
 
     //   IPlugin methods
@@ -83,7 +83,7 @@ private:
     PluginHost::IShell* _service;
     Core::Sink<Notification> _notification;
     Exchange::IMemory* _memory;
-    Exchange::ITestController* _testsControllerImp;
+    Exchange::ITestController* _testCommandControllerImp;
     string _pluginName;
     uint8_t _skipURL;
     uint32_t _pid;

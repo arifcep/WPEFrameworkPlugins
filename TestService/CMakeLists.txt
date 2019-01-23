@@ -8,11 +8,13 @@ set(PLUGIN_OPTIONS)
 set(PLUGIN_SOURCES
         Module.cpp
         TestService.cpp
-        TestCaseController.cpp
-        TestSuiteController.cpp
-        TestControllerImplementation.cpp
-        MemoryAllocationTS.cpp
-        CrashTS.cpp
+        TestCommandControllerImp.cpp
+        TestCommandController.cpp
+#        TestCaseController.cpp
+#        TestSuiteController.cpp
+#        TestControllerImplementation.cpp
+#        MemoryAllocationTS.cpp
+#        CrashTS.cpp
 )
 
 # update cxx_flags
