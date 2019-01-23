@@ -98,6 +98,18 @@ class MemoryAllocation {
             return status;
         }
 
+        void Statm(uint32_t &allocated, uint32_t &size, uint32_t &resident)
+        {
+            _lock.Lock();
+            allocated = _currentMemoryAllocation;
+            _lock.Unlock();
+
+            size = static_cast<uint32_t>(_process.Allocated() >> 10);
+            resident = static_cast<uint32_t>(_process.Resident() >> 10);
+
+            LogMemoryUsage();
+        }
+
         string /*JSON*/ CreateResponse()
         {
             string jsonResponse = EMPTY_STRING;
@@ -105,18 +117,12 @@ class MemoryAllocation {
             MemoryOutputMetadata response;
             uint32_t allocated, size, resident;
 
-            _lock.Lock();
-            allocated = _currentMemoryAllocation;
-            size = static_cast<uint32_t>(_process.Allocated() >> 10);
-            resident = static_cast<uint32_t>(_process.Resident() >> 10);
-            _lock.Unlock();
+            Statm(allocated, size, resident);
 
             response.Allocated = allocated;
             response.Resident = resident;
             response.Size = size;
             response.ToString(jsonResponse);
-
-            LogMemoryUsage();
 
             return jsonResponse;
         }
