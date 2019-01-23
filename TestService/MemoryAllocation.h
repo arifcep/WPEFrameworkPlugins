@@ -31,8 +31,7 @@ class MemoryAllocation {
         MemoryAllocation(const MemoryAllocation&) = delete;
         MemoryAllocation& operator=(const MemoryAllocation&) = delete;
 
-    public:
-    MemoryAllocation()
+        MemoryAllocation()
             : _currentMemoryAllocation(0)
             , _lock()
             , _process()
@@ -42,6 +41,7 @@ class MemoryAllocation {
             _startResident = static_cast<uint32_t>(_process.Resident() >> 10);
         }
 
+    public:
         static MemoryAllocation& Instance()
         {
             static MemoryAllocation _singleton;
