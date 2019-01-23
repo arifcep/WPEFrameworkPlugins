@@ -6,6 +6,28 @@ namespace WPEFramework {
 
 class MemoryAllocation {
     private:
+        class MemoryOutputMetadata : public Core::JSON::Container {
+        private:
+            MemoryOutputMetadata(const MemoryOutputMetadata&) = delete;
+            MemoryOutputMetadata& operator=(const MemoryOutputMetadata&) = delete;
+        public:
+            MemoryOutputMetadata()
+                : Core::JSON::Container()
+                , Allocated(0)
+                , Size(0)
+                , Resident(0)
+                {
+                    Add(_T("allocated"), &Allocated);
+                    Add(_T("size"), &Size);
+                    Add(_T("resident"), &Resident);
+                }
+            ~MemoryOutputMetadata() {}
+
+        public:
+            Core::JSON::DecSInt32 Allocated;
+            Core::JSON::DecSInt32 Size;
+            Core::JSON::DecSInt32 Resident;
+        };
         MemoryAllocation(const MemoryAllocation&) = delete;
         MemoryAllocation& operator=(const MemoryAllocation&) = delete;
 
@@ -28,11 +50,10 @@ class MemoryAllocation {
 
         ~MemoryAllocation() = default;
 
-    private:
+    public:
         // Memory Allocation methods
-        bool Malloc(uint32_t size) // size in Kb
+        void Malloc(uint32_t size) // size in Kb
         {
-            bool status = true;
             uint32_t noOfBlocks = 0;
             uint32_t blockSize = (32 * (getpagesize() >> 10)); // 128kB block size
             uint32_t runs = (uint32_t)size / blockSize;
@@ -44,7 +65,6 @@ class MemoryAllocation {
                 if (!_memory.back())
                 {
                     SYSLOG(Trace::Fatal, (_T("*** Failed allocation !!! ***")));
-                    status = false;
                     break;
                 }
 
@@ -55,20 +75,6 @@ class MemoryAllocation {
             }
             _currentMemoryAllocation += (noOfBlocks * blockSize);
             _lock.Unlock();
-
-            return status;
-        }
-
-        void Statm(uint32_t &allocated, uint32_t &size, uint32_t &resident)
-        {
-            _lock.Lock();
-            allocated = _currentMemoryAllocation;
-            _lock.Unlock();
-
-            size = static_cast<uint32_t>(_process.Allocated() >> 10);
-            resident = static_cast<uint32_t>(_process.Resident() >> 10);
-
-            LogMemoryUsage();
         }
 
         bool Free(void)
@@ -92,6 +98,30 @@ class MemoryAllocation {
             return status;
         }
 
+        string /*JSON*/ CreateResponse()
+        {
+            string jsonResponse = EMPTY_STRING;
+
+            MemoryOutputMetadata response;
+            uint32_t allocated, size, resident;
+
+            _lock.Lock();
+            allocated = _currentMemoryAllocation;
+            size = static_cast<uint32_t>(_process.Allocated() >> 10);
+            resident = static_cast<uint32_t>(_process.Resident() >> 10);
+            _lock.Unlock();
+
+            response.Allocated = allocated;
+            response.Resident = resident;
+            response.Size = size;
+            response.ToString(jsonResponse);
+
+            LogMemoryUsage();
+
+            return jsonResponse;
+        }
+
+    private:
         void DisableOOMKill(void)
         {
             int8_t oomNo = -17;
