@@ -1,7 +1,8 @@
-#include "MemoryAllocation.h"
 #include "Module.h"
 
 #include "TestCommandController.h"
+#include "MemoryAllocation.h"
+#include "TestCommandMetadata.h"
 
 namespace WPEFramework {
 
@@ -24,21 +25,48 @@ public:
 
 public:
     // ICommand methods
-    virtual string Execute(const string& params) { return EMPTY_STRING; }
-    virtual const string& Description() const { return _description; }
-    virtual const string& Signature() const { return _signature; }
-    virtual const string& Name() const { return _name; }
+    string Execute(const string& params) override
+    {
+        return _memoryAdmin.CreateResponse();
+    }
+
+    const string& Description() const override
+    {
+        return _description;
+    }
+
+    virtual const string& Signature() const override
+    {
+        return _signature;
+    }
+
+    virtual const string& Name() const final
+    {
+        return _name;
+    }
 
 private:
     BEGIN_INTERFACE_MAP(MemoryAllocationTS)
         INTERFACE_ENTRY(Exchange::ITestUtility::ICommand)
     END_INTERFACE_MAP
 
+    // ToDo: Move it to ICommand Base Class
+    string CreateDescription(const string& description)
+    {
+        TestCore::TestCommandDescription jsonDescription;
+        string outString;
+
+        jsonDescription.Description = description;
+        jsonDescription.ToString(outString);
+
+        return outString;
+    }
+
 private:
     MemoryAllocation& _memoryAdmin;
-    const string _description = EMPTY_STRING;
-    const string _name = EMPTY_STRING;
-    const string _signature = EMPTY_STRING;
+    const string _description = CreateDescription(_T("Provides information about system memory"));
+    const string _name = _T("Statm");
+    const string _signature = EMPTY_STRING;//ToDo: Not supported at the moment
 };
 
 static Statm* _singleton(Core::Service<Statm>::Create<Statm>());
