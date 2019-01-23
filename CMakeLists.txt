@@ -27,7 +27,7 @@ option(PLUGIN_WEBSERVER "Include WebServer plugin" OFF)
 option(PLUGIN_WEBSHELL "Include WebShell plugin" OFF)
 option(PLUGIN_TVCONTROL "Include TVControl plugin" OFF)
 option(PLUGIN_WIFICONTROL "Include WifiControl plugin" OFF)
-option(PLUGIN_TESTSERVICE "Include TestService plugin" ON)
+option(PLUGIN_TESTSERVICE "Include TestService plugin" OFF)
 
 # This contains all kinds of plugins (publicely available, so they all need the plugin support library !!
 find_package(Plugins REQUIRED)
