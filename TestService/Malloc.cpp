@@ -56,19 +56,19 @@ class Malloc : public Exchange::ITestUtility::ICommand {
             return _memoryAdmin.CreateResponse();
         }
 
-        const string& Description() const override
+        string Description() const override
         {
             return _description;
         }
 
         // ToDo: Consider to move it to ICommand Base class
-        virtual const string& Signature() const override
+        string Signature() const override
         {
             return _signature;
         }
 
         // ToDo: Consider to move it to ICommand Base class
-        virtual const string& Name() const override
+        string Name() const override
         {
             return _name;
         }
@@ -92,9 +92,9 @@ class Malloc : public Exchange::ITestUtility::ICommand {
 
     private:
         MemoryAllocation& _memoryAdmin;
-        const string _description = CreateDescription(_T("Allocates desired kB in memory and holds it"));
-        const string _name = _T("Malloc");
-        const string _signature = EMPTY_STRING;//ToDo: Not supported at the moment
+        string _description = CreateDescription(_T("Allocates desired kB in memory and holds it"));
+        string _name = _T("Malloc");
+        string _signature = EMPTY_STRING;//ToDo: Not supported at the moment
 };
 
 static Malloc* _singleton(Core::Service<Malloc>::Create<Malloc>());

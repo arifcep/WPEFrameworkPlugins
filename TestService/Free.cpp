@@ -32,19 +32,19 @@ class Free : public Exchange::ITestUtility::ICommand {
         }
 
         // ToDo: Consider to move it to ICommand Base class
-        const string& Description() const override
+        string Description() const override
         {
             return _description;
         }
 
         // ToDo: Consider to move it to ICommand Base class
-        virtual const string& Signature() const override
+        string Signature() const override
         {
             return _signature;
         }
 
         // ToDo: Consider to move it to ICommand Base class
-        virtual const string& Name() const override
+        string Name() const override
         {
             return _name;
         }
@@ -68,9 +68,9 @@ class Free : public Exchange::ITestUtility::ICommand {
 
     private:
         MemoryAllocation& _memoryAdmin;
-        const string _description = CreateDescription(_T("Releases previously allocated memory"));
-        const string _name = _T("Free");
-        const string _signature = EMPTY_STRING;//ToDo: Not supported at the moment
+        string _description = CreateDescription(_T("Releases previously allocated memory"));
+        string _name = _T("Free");
+        string _signature = EMPTY_STRING;//ToDo: Not supported at the moment
 };
 
 static Free* _singleton(Core::Service<Free>::Create<Free>());

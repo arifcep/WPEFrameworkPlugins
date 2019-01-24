@@ -10,15 +10,12 @@ set(PLUGIN_OPTIONS)
 set(PLUGIN_SOURCES
         Module.cpp
         TestService.cpp
-        TestCommandControllerImp.cpp
         TestCommandController.cpp
+        TestUtilityImp.cpp
         Malloc.cpp
         Free.cpp
         Statm.cpp
 )
-
-# update cxx_flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 # Library definition section
 set(MODULE_NAME ${NAMESPACE}${PLUGIN_NAME})

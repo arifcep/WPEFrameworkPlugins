@@ -54,24 +54,6 @@ class TestCommandController
                     IteratorImpl _iterator;
         };
 
-        class Metadata : public Core::JSON::Container {
-            private:
-                Metadata(const Metadata&) = delete;
-                Metadata& operator=(const Metadata&) = delete;
-
-            public:
-                Metadata()
-                    : Core::JSON::Container()
-                    , TestCommands()
-                {
-                    Add(_T("testCommands"), &TestCommands);
-                }
-                ~Metadata() {}
-
-            public:
-                Core::JSON::ArrayType<Core::JSON::String> TestCommands;
-        };
-
         TestCommandController(const TestCommandController&) = delete;
         TestCommandController& operator=(const TestCommandController&) = delete;
         TestCommandController()
@@ -91,7 +73,6 @@ class TestCommandController
         // TestCommandController methods
         void Announce(Exchange::ITestUtility::ICommand* command);
         void Revoke(Exchange::ITestUtility::ICommand* command);
-        string /*JSON*/ TestCommands(void);
 
     private:
         mutable Core::CriticalSection _adminLock;
