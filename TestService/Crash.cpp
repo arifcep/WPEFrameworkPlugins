@@ -2,6 +2,7 @@
 
 #include "TestCommandController.h"
 #include "TestCommandMetadata.h"
+#include "interfaces/ITestUtility.h"
 
 #include "CrashAdmin.h"
 
@@ -58,13 +59,13 @@ public:
     }
 
     // ToDo: Consider to move it to ICommand Base class
-    const string& Description() const override { return _description; }
+    virtual string Description() const override { return _description; }
 
     // ToDo: Consider to move it to ICommand Base class
-    virtual const string& Signature() const override { return _signature; }
+    virtual string Signature() const override { return _signature; }
 
     // ToDo: Consider to move it to ICommand Base class
-    virtual const string& Name() const override { return _name; }
+    virtual string Name() const override { return _name; }
 
 private:
     BEGIN_INTERFACE_MAP(Crash)
@@ -86,9 +87,9 @@ private:
 
 private:
     CrashAdmin& _crashAdmin;
-    const string _description = CreateDescription(_T("Cause segmenation fault resulting in crash"));
-    const string _name = _T("Crash");
-    const string _signature = EMPTY_STRING; // ToDo: Not supported at the moment
+    string _description = CreateDescription(_T("Cause segmenation fault resulting in crash"));
+    string _name = _T("Crash");
+    string _signature = EMPTY_STRING; // ToDo: Not supported at the moment
 };
 
 static Crash* _singleton(Core::Service<Crash>::Create<Crash>());
