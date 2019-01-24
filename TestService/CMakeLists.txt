@@ -13,6 +13,8 @@ set(PLUGIN_SOURCES
         Malloc.cpp
         Free.cpp
         Statm.cpp
+        Crash.cpp
+        CrashAdmin.cpp
 )
 
 # update cxx_flags
