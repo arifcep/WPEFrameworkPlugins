@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Module.h"
+
+#include "TestCommandController.h"
 #include <interfaces/IMemory.h>
-#include <interfaces/ITestController.h>
+#include <interfaces/ITestUtility.h>
 
 namespace WPEFramework {
 namespace Plugin {
@@ -39,12 +41,30 @@ private:
         TestService& _parent;
     };
 
+    class Metadata : public Core::JSON::Container {
+        private:
+            Metadata(const Metadata&) = delete;
+            Metadata& operator=(const Metadata&) = delete;
+
+        public:
+            Metadata()
+                : Core::JSON::Container()
+                , TestCommands()
+            {
+                Add(_T("testCommands"), &TestCommands);
+            }
+            ~Metadata() {}
+
+        public:
+            Core::JSON::ArrayType<Core::JSON::String> TestCommands;
+    };
+
 public:
     TestService()
         : _service(nullptr)
         , _notification(this)
         , _memory(nullptr)
-        , _testCommandControllerImp(nullptr)
+        , _testUtilityImp(nullptr)
         , _pluginName("TestService")
         , _skipURL(0)
         , _pid(0)
@@ -57,7 +77,7 @@ public:
     INTERFACE_ENTRY(PluginHost::IPlugin)
     INTERFACE_ENTRY(PluginHost::IWeb)
     INTERFACE_AGGREGATE(Exchange::IMemory, _memory)
-    INTERFACE_AGGREGATE(Exchange::ITestController, _testCommandControllerImp)
+    INTERFACE_AGGREGATE(Exchange::ITestUtility, _testUtilityImp)
     END_INTERFACE_MAP
 
     //   IPlugin methods
@@ -79,11 +99,13 @@ private:
     void Deactivated(RPC::IRemoteProcess* process);
 
     void ProcessTermination(uint32_t pid);
+    string /*JSON*/ Process(const string& path, const uint8_t skipUrl, const string& body /*JSON*/);
+    string /*JSON*/ TestCommandsResponse(void);
 
     PluginHost::IShell* _service;
     Core::Sink<Notification> _notification;
     Exchange::IMemory* _memory;
-    Exchange::ITestController* _testCommandControllerImp;
+    Exchange::ITestUtility* _testUtilityImp;
     string _pluginName;
     uint8_t _skipURL;
     uint32_t _pid;

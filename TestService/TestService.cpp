@@ -66,16 +66,17 @@ SERVICE_REGISTRATION(TestService, 1, 0);
 
     ASSERT(service != nullptr);
     ASSERT(_service == nullptr);
-    ASSERT(_testCommandControllerImp == nullptr);
+    ASSERT(_testUtilityImp == nullptr);
     ASSERT(_memory == nullptr);
 
     _service = service;
     _skipURL = static_cast<uint8_t>(_service->WebPrefix().length());
     _service->Register(&_notification);
 
-    _testCommandControllerImp = _service->Root<Exchange::ITestController>(_pid, ImplWaitTime, _T("TestCommandControllerImp"));
+    _testUtilityImp = _service->Root<Exchange::ITestUtility>(_pid, ImplWaitTime, _T("TestUtilityImp"));
+    //_testUtilityImp = Core::ServiceAdministrator::Instance().Instantiate<Exchange::ITestUtility>(Core::Library(), _T("TestUtilityImp"), static_cast<uint32_t>(~0));
 
-    if ((_testCommandControllerImp != nullptr) && (_service != nullptr))
+    if ((_testUtilityImp != nullptr) && (_service != nullptr))
     {
         _memory = WPEFramework::TestService::MemoryObserver(_pid);
         ASSERT(_memory != nullptr);
@@ -85,7 +86,7 @@ SERVICE_REGISTRATION(TestService, 1, 0);
     {
         ProcessTermination(_pid);
         _service = nullptr;
-        _testCommandControllerImp = nullptr;
+        _testUtilityImp = nullptr;
         _service->Unregister(&_notification);
 
         TRACE(Trace::Fatal, (_T("*** TestService could not be instantiated ***")))
@@ -98,14 +99,14 @@ SERVICE_REGISTRATION(TestService, 1, 0);
 /* virtual */ void TestService::Deinitialize(PluginHost::IShell* service)
 {
     ASSERT(_service == service);
-    ASSERT(_testCommandControllerImp != nullptr);
+    ASSERT(_testUtilityImp != nullptr);
     ASSERT(_memory != nullptr);
     ASSERT(_pid);
 
     TRACE(Trace::Information, (_T("*** OutOfProcess Plugin is properly destructed. PID: %d ***"), _pid))
 
     ProcessTermination(_pid);
-    _testCommandControllerImp = nullptr;
+    _testUtilityImp = nullptr;
     _memory->Release();
     _memory = nullptr;
     _service->Unregister(&_notification);
@@ -133,7 +134,7 @@ static Core::ProxyPoolType<Web::TextBody> _testServiceMetadata(2);
     ASSERT(_skipURL <= request.Path.length());
     Core::ProxyType<Web::Response> result(PluginHost::Factories::Instance().Response());
 
-    if (_testCommandControllerImp != nullptr)
+    if (_testUtilityImp != nullptr)
     {
         Core::ProxyType<Web::TextBody> body(_testServiceMetadata.Element());
         string requestBody = EMPTY_STRING;
@@ -143,7 +144,7 @@ static Core::ProxyPoolType<Web::TextBody> _testServiceMetadata(2);
             requestBody = (*request.Body<Web::TextBody>());
         }
 
-        (*body) = _testCommandControllerImp->Process(request.Path, _skipURL, requestBody);
+        (*body) = Process(request.Path, _skipURL, requestBody);
         if((*body) != EMPTY_STRING)
         {
             result->Body<Web::TextBody>(body);
@@ -187,6 +188,99 @@ void TestService::Deactivated(RPC::IRemoteProcess* process)
         ASSERT(_service != nullptr);
         PluginHost::WorkerPool::Instance().Submit(PluginHost::IShell::Job::Create(_service, PluginHost::IShell::DEACTIVATED, PluginHost::IShell::FAILURE));
     }
+}
+
+string /*JSON*/ TestService::TestCommandsResponse(void)
+{
+    string response;
+    Metadata testCommands;
+
+    SYSLOG(Trace::Fatal, (_T("*** TestCommandsResponse 1 ***")));
+    Exchange::ITestUtility::ICommand::IIterator* supportedCommands = _testUtilityImp->Commands();
+    SYSLOG(Trace::Fatal, (_T("*** TestCommandsResponse 2 ***")));
+
+    while (supportedCommands->Next())
+    {
+        Core::JSON::String name;
+        SYSLOG(Trace::Fatal, (_T("*** TestCommandsResponse 3 ***")));
+        name = supportedCommands->Command()->Name();
+        SYSLOG(Trace::Fatal, (_T("*** TestCommandsResponse 4 ***")));
+        testCommands.TestCommands.Add(name);
+    }
+    testCommands.ToString(response);
+    SYSLOG(Trace::Fatal, (_T("*** TestCommandsResponse 5 ***")));
+
+    return response;
+}
+
+string /*JSON*/ TestService::Process(const string& path, const uint8_t skipUrl, const string& body /*JSON*/)
+{
+    SYSLOG(Trace::Fatal, (_T("*** Process, path: %s***"), path.c_str()));
+    bool executed = false;
+    // Return empty result in case of issue
+    string /*JSON*/ response = EMPTY_STRING;
+
+    Core::TextSegmentIterator index(Core::TextFragment(path, skipUrl, path.length() - skipUrl), false, '/');
+
+    index.Next();
+    index.Next();
+    // Here process request other than:
+    // /Service/<CALLSIGN>/TestCommands
+    // /Service/<CALLSIGN>/<TEST_COMMAND_NAME>/...
+
+    if ((index.Current().Text() == _T("TestCommands")) && (!index.Next()))
+    {
+        SYSLOG(Trace::Fatal, (_T("*** Process, TestCommands***")));
+        response = TestCommandsResponse();
+        SYSLOG(Trace::Fatal, (_T("*** TestCommands %s ***"), response.c_str()));
+        executed = true;
+    }
+    else
+    {
+        Exchange::ITestUtility::ICommand::IIterator* supportedCommands = _testUtilityImp->Commands();
+         string testCommand = index.Current().Text();
+
+        while (supportedCommands->Next())
+        {
+            SYSLOG(Trace::Fatal, (_T("*** supportedCommands->Command()->Name() %s***"), supportedCommands->Command()->Name().c_str()));
+            SYSLOG(Trace::Fatal, (_T("*** testCommand %s***"), testCommand.c_str()));
+            if (supportedCommands->Command()->Name() == testCommand)
+            {
+                // Found test command
+                if (!index.Next())
+                {
+                    SYSLOG(Trace::Fatal, (_T("*** Test execution ***")));
+                    // Execute test command
+                    response = supportedCommands->Command()->Execute(body);
+                    executed = true;
+                }
+                else
+                {
+                    //index.Next();
+                    if ((index.Current().Text() == _T("Description")) && (!index.Next()))
+                    {
+                        SYSLOG(Trace::Fatal, (_T("*** Description execution ***")));
+                        response = supportedCommands->Command()->Description();
+                        executed = true;
+                    }
+                    else if ((index.Current().Text() == _T("Parameters")) && (!index.Next()))
+                    {
+                        SYSLOG(Trace::Fatal, (_T("*** Parameters execution ***")));
+                        response = supportedCommands->Command()->Signature();
+                        executed = true;
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    if (!executed)
+    {
+        TRACE(Trace::Fatal, (_T("*** Test case method not found !!! ***")))
+    }
+
+    return response;
 }
 } // namespace Plugin
 } // namespace WPEFramework

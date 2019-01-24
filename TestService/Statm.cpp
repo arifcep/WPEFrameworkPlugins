@@ -30,17 +30,17 @@ class Statm : public Exchange::ITestUtility::ICommand {
             return _memoryAdmin.CreateResponse();
         }
 
-        const string& Description() const override
+        string Description() const override
         {
             return _description;
         }
 
-        virtual const string& Signature() const override
+        string Signature() const override
         {
             return _signature;
         }
 
-        virtual const string& Name() const final
+        string Name() const final
         {
             return _name;
         }
@@ -64,9 +64,9 @@ class Statm : public Exchange::ITestUtility::ICommand {
 
     private:
         MemoryAllocation& _memoryAdmin;
-        const string _description = CreateDescription(_T("Provides information about system memory"));
-        const string _name = _T("Statm");
-        const string _signature = EMPTY_STRING;//ToDo: Not supported at the moment
+        string _description = CreateDescription(_T("Provides information about system memory"));
+        string _name = _T("Statm");
+        string _signature = EMPTY_STRING;//ToDo: Not supported at the moment
 };
 
 static Statm* _singleton(Core::Service<Statm>::Create<Statm>());
