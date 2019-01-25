@@ -45,7 +45,7 @@ public:
                 : Core::JSON::Container()
                 , Name(name)
                 , Type(type)
-                , Description(Description)
+                , Description(description)
             {
                 AddFields();
             }
@@ -65,6 +65,7 @@ public:
                 Name = rhs.Name;
                 Type = rhs.Type;
                 Description = rhs.Description;
+                return (*this);
             }
 
         private:
@@ -118,8 +119,8 @@ public:
         };
 
     public:
-        Metadata& Input(const Parameter& param) { _signature.Output = param; }
-        Metadata& Output(const Parameter& param) { _signature.Input.Add(param); }
+        Metadata& Input(const Parameter& param) { _signature.Input.Add(param); }
+        Metadata& Output(const Parameter& param) { _signature.Output = param; }
 
         void ToString(string& result) const { _signature.ToString(result); }
 
@@ -134,6 +135,7 @@ public:
         , _description()
         , _metadata(metadata)
     {
+        TRACE_L1(_T("********************** CommandBase()"));
     }
 
     virtual ~CommandBase() = default;
@@ -163,12 +165,15 @@ private:
     Crash& operator=(const Crash&) = delete;
 
 public:
+//.Input(CommandBase::Metadata::Parameter(_T("nameOutIn"), _T("typeIn"), _T("descriptionIn")))
     Crash()
         : CommandBase(CommandBase::Metadata()
-                          .Output(CommandBase::Metadata::Parameter(_T("nameOut"), _T("typeOut"), _T("descriptionOut")))
-                          .Input(CommandBase::Metadata::Parameter(_T("nameOutIn"), _T("typeIn"), _T("descriptionIn"))))
+            /*.Output(CommandBase::Metadata::Parameter(_T("nameOut"), _T("typeOut"), _T("descriptionOut"))))*/
+            .Input(CommandBase::Metadata::Parameter(_T("nameOutIn"), _T("typeIn"), _T("descriptionIn")))
+            )
         , _crashAdmin(CrashAdmin::Instance())
     {
+        TRACE_L1(_T("********************** Crash()"));
         // ToDo: try to hide it in base class to do it automagically
         TestCore::TestCommandController::Instance().Announce(this);
     }
@@ -177,7 +182,7 @@ public:
     virtual ~Crash() { TestCore::TestCommandController::Instance().Revoke(this); }
 
     BEGIN_INTERFACE_MAP(Crash)
-        INTERFACE_ENTRY(Exchange::ITestUtility::ICommand)
+    INTERFACE_ENTRY(Exchange::ITestUtility::ICommand)
     END_INTERFACE_MAP
 
 private:
