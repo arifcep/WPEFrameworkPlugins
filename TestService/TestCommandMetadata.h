@@ -24,6 +24,25 @@ public:
     Core::JSON::String Description;
 };
 
+class TestCommandName : public Core::JSON::Container {
+private:
+    TestCommandName(const TestCommandName&) = delete;
+    TestCommandName& operator=(const TestCommandName&) = delete;
+
+public:
+    TestCommandName()
+        : Core::JSON::Container()
+        , Name()
+    {
+        Add(_T("name"), &Name);
+    }
+
+    ~TestCommandName() {}
+
+public:
+    Core::JSON::String Name;
+};
+
 class TestCommandParameters : public Core::JSON::Container {
 private:
     TestCommandParameters(const TestCommandParameters&) = delete;
