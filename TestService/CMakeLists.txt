@@ -8,13 +8,12 @@ set(PLUGIN_OPTIONS)
 set(PLUGIN_SOURCES
         Module.cpp
         TestService.cpp
-        TestCommandController.cpp
+        CommandCore/TestCommandController.cpp
         TestUtilityImp.cpp
-        Malloc.cpp
-        Free.cpp
-        Statm.cpp
-        Crash.cpp
-        CrashAdmin.cpp
+        Commands/Malloc.cpp
+        Commands/Free.cpp
+        Commands/Statm.cpp
+#        Commands/Crash.cpp
 )
 
 # Library definition section

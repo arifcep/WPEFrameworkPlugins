@@ -2,7 +2,7 @@
 
 #include "Module.h"
 
-#include "TestCommandController.h"
+#include "CommandCore/TestCommandController.h"
 #include <interfaces/IMemory.h>
 #include <interfaces/ITestUtility.h>
 

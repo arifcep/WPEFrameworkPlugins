@@ -1,6 +1,6 @@
 #include "Module.h"
 
-#include "TestCommandController.h"
+#include "CommandCore/TestCommandController.h"
 #include <interfaces/ITestUtility.h>
 
 namespace WPEFramework {

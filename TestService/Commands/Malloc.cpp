@@ -1,12 +1,11 @@
-#include "Module.h"
-
-#include "TestCommandController.h"
+#include "../CommandCore/TestCommandController.h"
 #include "MemoryAllocation.h"
-#include "TestCommandMetadata.h"
+#include "../CommandCore/TestCommandMetadata.h"
+#include "../CommandCore/TestCommandBase.h"
 
 namespace WPEFramework {
 
-class Malloc : public Exchange::ITestUtility::ICommand {
+class Malloc : public TestCommandBase {
     private:
         class MallocInputMetadata : public Core::JSON::Container {
             private:
@@ -31,7 +30,10 @@ class Malloc : public Exchange::ITestUtility::ICommand {
 
     public:
         Malloc()
-            : _memoryAdmin(MemoryAllocation::Instance())
+            : TestCommandBase(TestCommandBase::DescriptionBuilder("Provides information about system memory"),
+                              TestCommandBase::SignatureBuilder(TestCore::TestCommandSignature::Parameter("InName", "InType", "InComments")).
+                              AddOutParameter(TestCore::TestCommandSignature::Parameter("OutName", "OutType", "OutComments")))
+            , _memoryAdmin(MemoryAllocation::Instance())
         {
             TestCore::TestCommandController::Instance().Announce(this);
         }
@@ -56,45 +58,19 @@ class Malloc : public Exchange::ITestUtility::ICommand {
             return _memoryAdmin.CreateResponse();
         }
 
-        string Description() const override
-        {
-            return _description;
-        }
-
-        // ToDo: Consider to move it to ICommand Base class
-        string Signature() const override
-        {
-            return _signature;
-        }
-
-        // ToDo: Consider to move it to ICommand Base class
         string Name() const override
         {
             return _name;
         }
 
-        // ToDo: Consider to move it to ICommand Base class
-        string CreateDescription(const string& description)
-        {
-            TestCore::TestCommandDescription jsonDescription;
-            string outString;
-
-            jsonDescription.Description = description;
-            jsonDescription.ToString(outString);
-
-            return outString;
-        }
-
     private:
-        BEGIN_INTERFACE_MAP(MemoryAllocationTS)
+        BEGIN_INTERFACE_MAP(Malloc)
             INTERFACE_ENTRY(Exchange::ITestUtility::ICommand)
         END_INTERFACE_MAP
 
     private:
         MemoryAllocation& _memoryAdmin;
-        string _description = CreateDescription(_T("Allocates desired kB in memory and holds it"));
-        string _name = _T("Malloc");
-        string _signature = EMPTY_STRING;//ToDo: Not supported at the moment
+        const string _name = _T("Malloc");
 };
 
 static Malloc* _singleton(Core::Service<Malloc>::Create<Malloc>());

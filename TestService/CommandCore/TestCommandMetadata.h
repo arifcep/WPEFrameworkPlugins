@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Module.h"
+#include "../Module.h"
 
 namespace WPEFramework {
 namespace TestCore {
@@ -43,15 +43,15 @@ public:
     Core::JSON::String Name;
 };
 
-class TestCommandParameters : public Core::JSON::Container {
+class TestCommandSignature : public Core::JSON::Container {
 private:
-    TestCommandParameters(const TestCommandParameters&) = delete;
-    TestCommandParameters& operator=(const TestCommandParameters&) = delete;
+    TestCommandSignature(const TestCommandSignature&) = delete;
+    TestCommandSignature& operator=(const TestCommandSignature&) = delete;
 
 public:
-    class TestCommand : public Core::JSON::Container {
+    class Parameter : public Core::JSON::Container {
     public:
-        TestCommand& operator=(const TestCommand& rhs)
+        Parameter& operator=(const Parameter& rhs)
         {
             this->Name = rhs.Name;
             this->Type = rhs.Type;
@@ -60,7 +60,7 @@ public:
             return *this;
         }
 
-        TestCommand()
+        Parameter()
             : Core::JSON::Container()
             , Name()
             , Type()
@@ -70,7 +70,7 @@ public:
             addFields();
         }
 
-        TestCommand(const string& name, const string& type, const string& comment)
+        Parameter(const string& name, const string& type, const string& comment)
             : Core::JSON::Container()
             , Name(name)
             , Type(type)
@@ -79,7 +79,7 @@ public:
             addFields();
         }
 
-        TestCommand(const TestCommand& copy)
+        Parameter(const Parameter& copy)
             : Core::JSON::Container()
             , Name(copy.Name)
             , Type(copy.Type)
@@ -88,7 +88,7 @@ public:
             addFields();
         }
 
-        ~TestCommand() {}
+        ~Parameter() {}
 
     private:
         void addFields()
@@ -105,7 +105,7 @@ public:
     };
 
 public:
-    TestCommandParameters()
+    TestCommandSignature()
         : Core::JSON::Container()
         , Input()
         , Output()
@@ -113,11 +113,11 @@ public:
         Add(_T("input"), &Input);
         Add(_T("output"), &Output);
     }
-    ~TestCommandParameters() {}
+    ~TestCommandSignature() {}
 
 public:
-    Core::JSON::ArrayType<TestCommand> Input;
-    Core::JSON::ArrayType<TestCommand> Output;
+    Core::JSON::ArrayType<Parameter> Input;
+    Core::JSON::ArrayType<Parameter> Output;
 };
 } // namespace TestCore
 } // namespace WPEFramework

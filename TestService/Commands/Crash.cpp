@@ -1,7 +1,5 @@
-#include "Module.h"
-
-#include "TestCommandController.h"
-#include "TestCommandMetadata.h"
+#include "../CommandCore/TestCommandController.h"
+#include "../CommandCore/TestCommandMetadata.h"
 #include "interfaces/ITestUtility.h"
 
 #include "CrashAdmin.h"
