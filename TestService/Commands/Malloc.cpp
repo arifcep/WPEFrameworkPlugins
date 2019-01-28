@@ -30,9 +30,11 @@ class Malloc : public TestCommandBase {
 
     public:
         Malloc()
-            : TestCommandBase(TestCommandBase::DescriptionBuilder("Provides information about system memory"),
-                              TestCommandBase::SignatureBuilder(TestCore::TestCommandSignature::Parameter("InName", "InType", "InComments")).
-                              AddOutParameter(TestCore::TestCommandSignature::Parameter("OutName", "OutType", "OutComments")))
+            : TestCommandBase(TestCommandBase::DescriptionBuilder("Allocates desired kB in memory and holds it"),
+                              TestCommandBase::SignatureBuilder(TestCommandBase::Parameter("size", "InType", "memory in kB for allocation"))
+                              .AddOutParameter(TestCommandBase::Parameter("allocated", "Int", "allocated memory in kB"))
+                              .AddOutParameter(TestCommandBase::Parameter("size", "Int", "[proc/<pid>/statm] size memory in kB"))
+                              .AddOutParameter(TestCommandBase::Parameter("resident", "Int", "[proc/<pid>/statm] resident memory in kB")))
             , _memoryAdmin(MemoryAllocation::Instance())
         {
             TestCore::TestCommandController::Instance().Announce(this);

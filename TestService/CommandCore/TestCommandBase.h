@@ -7,32 +7,45 @@ namespace WPEFramework {
 
 class TestCommandBase : public Exchange::ITestUtility::ICommand {
     public:
-#if 0
         struct Parameter {
-            Parameter(const string& name, const string& type, const string& comments)
+            Parameter(const string& name, const string& type, const string& comment)
                 : _name(name)
                 , _type(type)
-                , _comments(comments)
+                , _comment(comment)
             {}
             string _name;
             string _type;
-            string _comments;
+            string _comment;
         };
-#endif
+
         class SignatureBuilder {
             public:
                 SignatureBuilder(const SignatureBuilder&) = delete;
                 SignatureBuilder& operator=(const SignatureBuilder&) = delete;
 
-                SignatureBuilder(const TestCore::TestCommandSignature::Parameter& returnValue)
+                SignatureBuilder()
                     : _jsonSignature()
                 {
-                    _jsonSignature.Input.Add(returnValue);
+                    //Do nothing
                 }
 
-                SignatureBuilder& AddOutParameter(const TestCore::TestCommandSignature::Parameter& parameter)
+                SignatureBuilder(const TestCommandBase::Parameter& returnParam)
+                    : _jsonSignature()
                 {
-                    _jsonSignature.Output.Add(parameter);
+                    TestCore::TestCommandSignature::Parameter param;
+                    param.Comment = returnParam._comment;
+                    param.Name = returnParam._name;
+                    param.Type = returnParam._type;
+                    _jsonSignature.Input.Add(param);
+                }
+
+                SignatureBuilder& AddOutParameter(const TestCommandBase::Parameter& inputParam)
+                {
+                    TestCore::TestCommandSignature::Parameter param;
+                    param.Comment = inputParam._comment;
+                    param.Name = inputParam._name;
+                    param.Type = inputParam._type;
+                    _jsonSignature.Output.Add(param);
                     return *this;
                 }
 

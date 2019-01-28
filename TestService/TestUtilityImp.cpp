@@ -20,12 +20,10 @@ namespace TestCore {
             //  ITestUtility methods
             // -------------------------------------------------------------------------------------------------------
             Exchange::ITestUtility::ICommand::IIterator* Commands() const override {
-                SYSLOG(Trace::Fatal, (_T("*** TestUtilityImp::Commands ***")));
                 return TestCore::TestCommandController::Instance().Commands();
             }
 
             Exchange::ITestUtility::ICommand* Command(const string& name) const override {
-                SYSLOG(Trace::Fatal, (_T("*** TestUtilityImp::Command ***")));
                 return TestCore::TestCommandController::Instance().Command(name);
             }
 

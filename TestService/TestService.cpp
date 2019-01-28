@@ -195,27 +195,21 @@ string /*JSON*/ TestService::TestCommandsResponse(void)
     string response;
     Metadata testCommands;
 
-    SYSLOG(Trace::Fatal, (_T("*** TestCommandsResponse 1 ***")));
     Exchange::ITestUtility::ICommand::IIterator* supportedCommands = _testUtilityImp->Commands();
-    SYSLOG(Trace::Fatal, (_T("*** TestCommandsResponse 2 ***")));
 
     while (supportedCommands->Next())
     {
         Core::JSON::String name;
-        SYSLOG(Trace::Fatal, (_T("*** TestCommandsResponse 3 ***")));
         name = supportedCommands->Command()->Name();
-        SYSLOG(Trace::Fatal, (_T("*** TestCommandsResponse 4 ***")));
         testCommands.TestCommands.Add(name);
     }
     testCommands.ToString(response);
-    SYSLOG(Trace::Fatal, (_T("*** TestCommandsResponse 5 ***")));
 
     return response;
 }
 
 string /*JSON*/ TestService::Process(const string& path, const uint8_t skipUrl, const string& body /*JSON*/)
 {
-    SYSLOG(Trace::Fatal, (_T("*** Process, path: %s***"), path.c_str()));
     bool executed = false;
     // Return empty result in case of issue
     string /*JSON*/ response = EMPTY_STRING;
@@ -230,9 +224,7 @@ string /*JSON*/ TestService::Process(const string& path, const uint8_t skipUrl, 
 
     if ((index.Current().Text() == _T("TestCommands")) && (!index.Next()))
     {
-        SYSLOG(Trace::Fatal, (_T("*** Process, TestCommands***")));
         response = TestCommandsResponse();
-        SYSLOG(Trace::Fatal, (_T("*** TestCommands %s ***"), response.c_str()));
         executed = true;
     }
     else
@@ -242,14 +234,11 @@ string /*JSON*/ TestService::Process(const string& path, const uint8_t skipUrl, 
 
         while (supportedCommands->Next())
         {
-            SYSLOG(Trace::Fatal, (_T("*** supportedCommands->Command()->Name() %s***"), supportedCommands->Command()->Name().c_str()));
-            SYSLOG(Trace::Fatal, (_T("*** testCommand %s***"), testCommand.c_str()));
             if (supportedCommands->Command()->Name() == testCommand)
             {
                 // Found test command
                 if (!index.Next())
                 {
-                    SYSLOG(Trace::Fatal, (_T("*** Test execution ***")));
                     // Execute test command
                     response = supportedCommands->Command()->Execute(body);
                     executed = true;
@@ -259,13 +248,11 @@ string /*JSON*/ TestService::Process(const string& path, const uint8_t skipUrl, 
                     //index.Next();
                     if ((index.Current().Text() == _T("Description")) && (!index.Next()))
                     {
-                        SYSLOG(Trace::Fatal, (_T("*** Description execution ***")));
                         response = supportedCommands->Command()->Description();
                         executed = true;
                     }
                     else if ((index.Current().Text() == _T("Parameters")) && (!index.Next()))
                     {
-                        SYSLOG(Trace::Fatal, (_T("*** Parameters execution ***")));
                         response = supportedCommands->Command()->Signature();
                         executed = true;
                     }

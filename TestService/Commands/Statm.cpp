@@ -13,8 +13,10 @@ class Statm : public TestCommandBase {
     public:
         Statm()
             : TestCommandBase(TestCommandBase::DescriptionBuilder("Provides information about system memory"),
-                              TestCommandBase::SignatureBuilder(TestCore::TestCommandSignature::Parameter("InName", "InType", "InComments")).
-                              AddOutParameter(TestCore::TestCommandSignature::Parameter("OutName", "OutType", "OutComments")))
+                              TestCommandBase::SignatureBuilder()
+                              .AddOutParameter(TestCommandBase::Parameter("allocated", "Int", "allocated memory in kB"))
+                              .AddOutParameter(TestCommandBase::Parameter("size", "Int", "[proc/<pid>/statm] size memory in kB"))
+                              .AddOutParameter(TestCommandBase::Parameter("resident", "Int", "[proc/<pid>/statm] resident memory in kB")))
             , _memoryAdmin(MemoryAllocation::Instance())
         {
             TestCore::TestCommandController::Instance().Announce(this);
