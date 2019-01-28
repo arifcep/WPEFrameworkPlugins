@@ -11,7 +11,7 @@ class Statm : public TestCommandBase {
 
     public:
         Statm()
-            : TestCommandBase(TestCommandBase::DescriptionBuilder("Provides information about system memory"),
+            : TestCommandBase(TestCommandBase::DescriptionBuilder("Provides information about system memory allocation"),
                               TestCommandBase::SignatureBuilder()
                               .AddOutParameter(TestCommandBase::Parameter("allocated", "Int", "allocated memory in kB"))
                               .AddOutParameter(TestCommandBase::Parameter("size", "Int", "[proc/<pid>/statm] size memory in kB"))
