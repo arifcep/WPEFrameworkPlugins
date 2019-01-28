@@ -1,7 +1,6 @@
 #include "../CommandCore/TestCommandController.h"
-#include "MemoryAllocation.h"
-#include "../CommandCore/TestCommandMetadata.h"
 #include "../CommandCore/TestCommandBase.h"
+#include "MemoryAllocation.h"
 
 namespace WPEFramework {
 
@@ -29,7 +28,7 @@ class Statm : public TestCommandBase {
 
     public:
         // ICommand methods
-        string Execute(const string& params) override
+        string Execute(const string& params) final
         {
             return _memoryAdmin.CreateResponse();
         }

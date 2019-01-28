@@ -1,7 +1,6 @@
 #include "../CommandCore/TestCommandController.h"
-#include "MemoryAllocation.h"
-#include "../CommandCore/TestCommandMetadata.h"
 #include "../CommandCore/TestCommandBase.h"
+#include "MemoryAllocation.h"
 
 namespace WPEFramework {
 
@@ -47,7 +46,7 @@ class Malloc : public TestCommandBase {
 
     public:
         // ICommand methods
-        string Execute(const string& params) override
+        string Execute(const string& params) final
         {
             MallocInputMetadata input;
             uint32_t size;
@@ -60,7 +59,7 @@ class Malloc : public TestCommandBase {
             return _memoryAdmin.CreateResponse();
         }
 
-        string Name() const override
+        string Name() const final
         {
             return _name;
         }

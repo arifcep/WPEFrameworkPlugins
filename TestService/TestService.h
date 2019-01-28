@@ -65,7 +65,6 @@ public:
         , _notification(this)
         , _memory(nullptr)
         , _testUtilityImp(nullptr)
-        , _pluginName("TestService")
         , _skipURL(0)
         , _pid(0)
     {
@@ -74,10 +73,10 @@ public:
     virtual ~TestService() {}
 
     BEGIN_INTERFACE_MAP(TestService)
-    INTERFACE_ENTRY(PluginHost::IPlugin)
-    INTERFACE_ENTRY(PluginHost::IWeb)
-    INTERFACE_AGGREGATE(Exchange::IMemory, _memory)
-    INTERFACE_AGGREGATE(Exchange::ITestUtility, _testUtilityImp)
+        INTERFACE_ENTRY(PluginHost::IPlugin)
+        INTERFACE_ENTRY(PluginHost::IWeb)
+        INTERFACE_AGGREGATE(Exchange::IMemory, _memory)
+        INTERFACE_AGGREGATE(Exchange::ITestUtility, _testUtilityImp)
     END_INTERFACE_MAP
 
     //   IPlugin methods
@@ -99,14 +98,13 @@ private:
     void Deactivated(RPC::IRemoteProcess* process);
 
     void ProcessTermination(uint32_t pid);
-    string /*JSON*/ Process(const string& path, const uint8_t skipUrl, const string& body /*JSON*/);
-    string /*JSON*/ TestCommandsResponse(void);
+    string /*JSON*/ HandleRequest(const string& path, const uint8_t skipUrl, const string& body /*JSON*/);
+    string /*JSON*/ TestCommands(void);
 
     PluginHost::IShell* _service;
     Core::Sink<Notification> _notification;
     Exchange::IMemory* _memory;
     Exchange::ITestUtility* _testUtilityImp;
-    string _pluginName;
     uint8_t _skipURL;
     uint32_t _pid;
 };

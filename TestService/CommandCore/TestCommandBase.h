@@ -23,13 +23,13 @@ class TestCommandBase : public Exchange::ITestUtility::ICommand {
                 SignatureBuilder(const SignatureBuilder&) = delete;
                 SignatureBuilder& operator=(const SignatureBuilder&) = delete;
 
-                SignatureBuilder()
+                explicit SignatureBuilder()
                     : _jsonSignature()
                 {
                     //Do nothing
                 }
 
-                SignatureBuilder(const TestCommandBase::Parameter& returnParam)
+                explicit SignatureBuilder(const TestCommandBase::Parameter& returnParam)
                     : _jsonSignature()
                 {
                     TestCore::TestCommandSignature::Parameter param;
@@ -70,7 +70,7 @@ class TestCommandBase : public Exchange::ITestUtility::ICommand {
                 DescriptionBuilder(const DescriptionBuilder&) = delete;
                 DescriptionBuilder& operator=(const DescriptionBuilder&) = delete;
 
-                DescriptionBuilder(const string& description)
+                explicit DescriptionBuilder(const string& description)
                     : _jsonDescription()
                 {
                     _jsonDescription.Description = description;
@@ -97,7 +97,7 @@ class TestCommandBase : public Exchange::ITestUtility::ICommand {
         TestCommandBase& operator=(const TestCommandBase&) = delete;
 
     public:
-        TestCommandBase(const DescriptionBuilder& description, const SignatureBuilder& signature)
+        explicit TestCommandBase(const DescriptionBuilder& description, const SignatureBuilder& signature)
             : Exchange::ITestUtility::ICommand()
             , _signature(signature.ToString())
             , _description(description.ToString())

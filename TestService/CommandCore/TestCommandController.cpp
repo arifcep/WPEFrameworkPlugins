@@ -38,13 +38,11 @@ Exchange::ITestUtility::ICommand* TestCommandController::Command(const string& n
 
 Exchange::ITestUtility::ICommand::IIterator* TestCommandController::Commands(void) const
 {
-    SYSLOG(Trace::Fatal, (_T("*** TestCommandController::Commands ***")));
     Exchange::ITestUtility::ICommand::IIterator* iterator = nullptr;
     _adminLock.Lock();
     iterator = Core::Service<Iterator>::Create<Exchange::ITestUtility::ICommand::IIterator>(_commands);
     _adminLock.Unlock();
     return iterator;
 }
-
 } // namespace TestCore
 } // namespace WPEFramework

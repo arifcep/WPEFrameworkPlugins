@@ -74,7 +74,6 @@ SERVICE_REGISTRATION(TestService, 1, 0);
     _service->Register(&_notification);
 
     _testUtilityImp = _service->Root<Exchange::ITestUtility>(_pid, ImplWaitTime, _T("TestUtilityImp"));
-    //_testUtilityImp = Core::ServiceAdministrator::Instance().Instantiate<Exchange::ITestUtility>(Core::Library(), _T("TestUtilityImp"), static_cast<uint32_t>(~0));
 
     if ((_testUtilityImp != nullptr) && (_service != nullptr))
     {
@@ -116,7 +115,7 @@ SERVICE_REGISTRATION(TestService, 1, 0);
 /* virtual */ string TestService::Information() const
 {
     // No additional info to report.
-    return ((_T("The purpose of [%s] plugin is proivde ability to execute functional tests."), _pluginName.c_str()));
+    return ((_T("The purpose of this plugin is provide ability to execute functional tests.")));
 }
 
 static Core::ProxyPoolType<Web::TextBody> _testServiceMetadata(2);
@@ -144,7 +143,7 @@ static Core::ProxyPoolType<Web::TextBody> _testServiceMetadata(2);
             requestBody = (*request.Body<Web::TextBody>());
         }
 
-        (*body) = Process(request.Path, _skipURL, requestBody);
+        (*body) = HandleRequest(request.Path, _skipURL, requestBody);
         if((*body) != EMPTY_STRING)
         {
             result->Body<Web::TextBody>(body);
@@ -190,7 +189,7 @@ void TestService::Deactivated(RPC::IRemoteProcess* process)
     }
 }
 
-string /*JSON*/ TestService::TestCommandsResponse(void)
+string /*JSON*/ TestService::TestCommands(void)
 {
     string response;
     Metadata testCommands;
@@ -208,7 +207,7 @@ string /*JSON*/ TestService::TestCommandsResponse(void)
     return response;
 }
 
-string /*JSON*/ TestService::Process(const string& path, const uint8_t skipUrl, const string& body /*JSON*/)
+string /*JSON*/ TestService::HandleRequest(const string& path, const uint8_t skipUrl, const string& body /*JSON*/)
 {
     bool executed = false;
     // Return empty result in case of issue
@@ -224,13 +223,13 @@ string /*JSON*/ TestService::Process(const string& path, const uint8_t skipUrl, 
 
     if ((index.Current().Text() == _T("TestCommands")) && (!index.Next()))
     {
-        response = TestCommandsResponse();
+        response = TestCommands();
         executed = true;
     }
     else
     {
         Exchange::ITestUtility::ICommand::IIterator* supportedCommands = _testUtilityImp->Commands();
-         string testCommand = index.Current().Text();
+        string testCommand = index.Current().Text();
 
         while (supportedCommands->Next())
         {

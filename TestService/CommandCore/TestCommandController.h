@@ -20,9 +20,7 @@ class TestCommandController
                 explicit Iterator(const TestCommandContainer& commands)
                     : Exchange::ITestUtility::ICommand::IIterator()
                     , _container(commands)
-                    , _iterator(_container) {
-
-                      }
+                    , _iterator(_container) { }
 
                 virtual ~Iterator() = default;
 

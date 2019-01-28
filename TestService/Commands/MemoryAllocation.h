@@ -21,7 +21,7 @@ class MemoryAllocation {
                     Add(_T("size"), &Size);
                     Add(_T("resident"), &Resident);
                 }
-            ~MemoryOutputMetadata() {}
+            ~MemoryOutputMetadata() = default;
 
         public:
             Core::JSON::DecSInt32 Allocated;
