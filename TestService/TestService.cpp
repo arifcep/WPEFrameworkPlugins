@@ -191,10 +191,11 @@ void TestService::Deactivated(RPC::IRemoteProcess* process)
 
 string /*JSON*/ TestService::TestCommands(void)
 {
-    string response;
+    string response = EMPTY_STRING;
     Metadata testCommands;
 
     Exchange::ITestUtility::ICommand::IIterator* supportedCommands = _testUtilityImp->Commands();
+    ASSERT(supportedCommands != nullptr);
 
     while (supportedCommands->Next())
     {
@@ -229,6 +230,8 @@ string /*JSON*/ TestService::HandleRequest(Web::Request::type type, const string
     else
     {
         Exchange::ITestUtility::ICommand::IIterator* supportedCommands = _testUtilityImp->Commands();
+        ASSERT(supportedCommands != nullptr);
+
         string testCommand = index.Current().Text();
 
         while (supportedCommands->Next())
