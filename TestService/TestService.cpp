@@ -143,7 +143,7 @@ static Core::ProxyPoolType<Web::TextBody> _testServiceMetadata(2);
             requestBody = (*request.Body<Web::TextBody>());
         }
 
-        (*body) = HandleRequest(request.Path, _skipURL, requestBody);
+        (*body) = HandleRequest(request.Verb, request.Path, _skipURL, requestBody);
         if((*body) != EMPTY_STRING)
         {
             result->Body<Web::TextBody>(body);
@@ -207,7 +207,7 @@ string /*JSON*/ TestService::TestCommands(void)
     return response;
 }
 
-string /*JSON*/ TestService::HandleRequest(const string& path, const uint8_t skipUrl, const string& body /*JSON*/)
+string /*JSON*/ TestService::HandleRequest(Web::Request::type type, const string& path, const uint8_t skipUrl, const string& body /*JSON*/)
 {
     bool executed = false;
     // Return empty result in case of issue
@@ -221,7 +221,7 @@ string /*JSON*/ TestService::HandleRequest(const string& path, const uint8_t ski
     // /Service/<CALLSIGN>/TestCommands
     // /Service/<CALLSIGN>/<TEST_COMMAND_NAME>/...
 
-    if ((index.Current().Text() == _T("TestCommands")) && (!index.Next()))
+    if ((index.Current().Text() == _T("TestCommands")) && (!index.Next()) && (type == Web::Request::HTTP_GET))
     {
         response = TestCommands();
         executed = true;
@@ -236,7 +236,7 @@ string /*JSON*/ TestService::HandleRequest(const string& path, const uint8_t ski
             if (supportedCommands->Command()->Name() == testCommand)
             {
                 // Found test command
-                if (!index.Next())
+                if (!index.Next() && ((type == Web::Request::HTTP_POST) || (type == Web::Request::HTTP_PUT)))
                 {
                     // Execute test command
                     response = supportedCommands->Command()->Execute(body);
@@ -244,16 +244,18 @@ string /*JSON*/ TestService::HandleRequest(const string& path, const uint8_t ski
                 }
                 else
                 {
-                    //index.Next();
-                    if ((index.Current().Text() == _T("Description")) && (!index.Next()))
+                    if (type == Web::Request::HTTP_GET)
                     {
-                        response = supportedCommands->Command()->Description();
-                        executed = true;
-                    }
-                    else if ((index.Current().Text() == _T("Parameters")) && (!index.Next()))
-                    {
-                        response = supportedCommands->Command()->Signature();
-                        executed = true;
+                        if ((index.Current().Text() == _T("Description")) && (!index.Next()))
+                        {
+                            response = supportedCommands->Command()->Description();
+                            executed = true;
+                        }
+                        else if ((index.Current().Text() == _T("Parameters")) && (!index.Next()))
+                        {
+                            response = supportedCommands->Command()->Signature();
+                            executed = true;
+                        }
                     }
                 }
                 break;

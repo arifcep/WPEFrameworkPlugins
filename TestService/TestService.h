@@ -98,7 +98,7 @@ private:
     void Deactivated(RPC::IRemoteProcess* process);
 
     void ProcessTermination(uint32_t pid);
-    string /*JSON*/ HandleRequest(const string& path, const uint8_t skipUrl, const string& body /*JSON*/);
+    string /*JSON*/ HandleRequest(Web::Request::type type, const string& path, const uint8_t skipUrl, const string& body /*JSON*/);
     string /*JSON*/ TestCommands(void);
 
     PluginHost::IShell* _service;
