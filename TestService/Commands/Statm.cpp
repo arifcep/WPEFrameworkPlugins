@@ -12,10 +12,7 @@ class Statm : public TestCommandBase {
     public:
         Statm()
             : TestCommandBase(TestCommandBase::DescriptionBuilder("Provides information about system memory allocation"),
-                              TestCommandBase::SignatureBuilder()
-                              .AddOutParameter(TestCommandBase::Parameter("allocated", "Int", "allocated memory in kB"))
-                              .AddOutParameter(TestCommandBase::Parameter("size", "Int", "[proc/<pid>/statm] size memory in kB"))
-                              .AddOutParameter(TestCommandBase::Parameter("resident", "Int", "[proc/<pid>/statm] resident memory in kB")))
+                              TestCommandBase::SignatureBuilder(TestCommandBase::Parameter("memory", "JSON", "memory statistics in KB")))
             , _memoryAdmin(MemoryAllocation::Instance())
         {
             TestCore::TestCommandController::Instance().Announce(this);

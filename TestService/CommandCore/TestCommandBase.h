@@ -23,12 +23,6 @@ class TestCommandBase : public Exchange::ITestUtility::ICommand {
                 SignatureBuilder(const SignatureBuilder&) = delete;
                 SignatureBuilder& operator=(const SignatureBuilder&) = delete;
 
-                explicit SignatureBuilder()
-                    : _jsonSignature()
-                {
-                    //Do nothing
-                }
-
                 explicit SignatureBuilder(const TestCommandBase::Parameter& returnParam)
                     : _jsonSignature()
                 {
@@ -36,16 +30,16 @@ class TestCommandBase : public Exchange::ITestUtility::ICommand {
                     param.Comment = returnParam._comment;
                     param.Name = returnParam._name;
                     param.Type = returnParam._type;
-                    _jsonSignature.Input.Add(param);
+                    _jsonSignature.Output.Add(param);
                 }
 
-                SignatureBuilder& AddOutParameter(const TestCommandBase::Parameter& inputParam)
+                SignatureBuilder& AddInParameter(const TestCommandBase::Parameter& inputParam)
                 {
                     TestCore::TestCommandSignature::Parameter param;
                     param.Comment = inputParam._comment;
                     param.Name = inputParam._name;
                     param.Type = inputParam._type;
-                    _jsonSignature.Output.Add(param);
+                    _jsonSignature.Input.Add(param);
                     return *this;
                 }
 
